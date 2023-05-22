@@ -10,7 +10,6 @@ const MessageStore = findByProps('getMessage', 'getMessages');
 const ChannelStore = findByProps("getChannel", "getDMFromUserId");
 const Message = findByProps("startEditMessage")
 
-
 let deletedMessages = {};
 let EditedMessage = "`[ EDITED ]`\n\n";
 let DeletedMessage = "`[ DELETED ]`";
