@@ -1,0 +1,1 @@
+{"name":"MessageLogger w/o Logs v0.0.6","description":"Modify deleted message and edited message dispatcher to keep the old content shown rather deleted or replaced by new one.","authors":[{"name":"Angelix","id":"692632336961110087"}],"main":"index.js","vendetta":{"icon":"ic_edit_24px"},"hash":"cfc056fbc274565af0a2b2c8116897043eabd79d3d976a83732ab31589144c3f"}
