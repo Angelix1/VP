@@ -4,7 +4,6 @@ import { storage } from "@vendetta/plugin";
 import { getAssetIDByName } from "@vendetta/ui/assets";
 import { General, Forms } from "@vendetta/ui/components";
 
-
 const { FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider } = Forms;
 const { ScrollView, View, Text } = General;
 
