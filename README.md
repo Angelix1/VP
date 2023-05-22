@@ -1,4 +1,4 @@
-# Vendetta Plugins Template
+# Vendetta Plugins
 This repo contains a plugins for [Vendetta](https://github.com/vendetta-mod/Vendetta).
 
 ## Proxied
