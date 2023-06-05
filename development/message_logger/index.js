@@ -83,7 +83,6 @@ const DIE = {
               edited_timestamp: "invalid_timestamp",
               content: `${originalMessage?.content} ${DeletedMessage}`,
               guild_id: ChannelStore.getChannel(originalMessage?.channel_id)?.guild_id,
-              message_reference: originalMessage?.message_reference ?? {},
             },
           };
 
