@@ -34,7 +34,9 @@ const DIE = {
 
     // patch for when editing own edited messages, it act like normal, instead of taking everything including the [EDITED] lol
     this.self = before('startEditMessage', Message, (args) => {
-      let Edited = `${storage["edit_var"]}\n\n`  ?? "`[ EDITED ]`\n\n";
+      
+      let Edited = storage["edit_var"].length ? storage["edit_var"] : "`[ EDITED ]`";
+        Edited = Edited + '\n\n';
 
       const [channelId, messageId, msg] = args;
       const lats = msg.split(Edited);
@@ -181,7 +183,9 @@ const DIE = {
       // patch for Message Edit
       if (event.type === "MESSAGE_UPDATE") {
         
-        let Edited = `${storage["edit_var"]}\n\n` || "`[ EDITED ]`\n\n";   
+        let Edited = storage["edit_var"].length ? storage["edit_var"] : "`[ EDITED ]`";
+        Edited = Edited + '\n\n';
+        
         // if bot return, and like who want to logs bot editing its damn msg          
         const originalMessage = MessageStore.getMessage(args[0].message?.channel_id, args[0].message?.id);
 
