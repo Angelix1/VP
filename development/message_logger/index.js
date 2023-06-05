@@ -1,4 +1,3 @@
-
 import Settings from "./Settings";
 
 import { before, after } from '@vendetta/patcher';
@@ -12,8 +11,16 @@ const Message = findByProps("startEditMessage")
 
 
 let deletedMessages = {};
-let EditedMessage = "`[ EDITED ]`\n\n";
-let DeletedMessage = "`[ DELETED ]`";
+
+/* settings IDs and Vars
+"del_var"
+"edit_var"
+"msg_normalEphemeral"
+"msg_useTimestamps
+"msg_AMPM"
+"msg_useDeleted"
+*/
+
 
 // Essential to Remove keys from deletedMessages object 
 function removeKey(key, obj) {
@@ -27,37 +34,24 @@ const DIE = {
 
     // patch for when editing own edited messages, it act like normal, instead of taking everything including the [EDITED] lol
     this.self = before('startEditMessage', Message, (args) => {
+      let Edited = `${storage["edit_var"]}\n\n`  ?? "`[ EDITED ]`\n\n";
+
       const [channelId, messageId, msg] = args;
-      const lats = msg.split(EditedMessage);
+      const lats = msg.split(Edited);
       args[2] = lats[lats.length - 1];
       return args;
     });
+
     
     // patch for the message
-    this.messageLogger = before("dispatch", FluxDispatcher, (args) => {
-
-      /* IDS
-      "msg_normalEphemeral"
-      "msg_useTimestamps
-      "msg_AMPM"
-      "msg_useDeleted"
-      */
-
-      storage["msg_normalEphemeral"] ??= false;
-      storage["msg_useDeleted"] ??= false;
-
-      storage["useTimestamps"] ??= false;
-      storage["useAMPM"] ??= false;
-  
+    this.messageLogger = before("dispatch", FluxDispatcher, (args) => { 
 
       const [event] = args;
       let typ = event.type;
   
       // Patch for Deleted Message    
-      if (typ === "MESSAGE_DELETE") { 
-        
-        const originalMessage = MessageStore.getMessage(args[0].channelId, args[0].id);
-        
+      if (typ === "MESSAGE_DELETE") {
+        let Deleted = storage["del_var"] || "`[ DELETED ]`";      
 
         // This is to fix the issue with needed to click multiple time to remove the ephemerals (if using Error Ephemeral, it'll still being annoying)
         if( deletedMessages[event.id] && deletedMessages[event.id]['modified'] == 2 ) {
@@ -71,18 +65,33 @@ const DIE = {
           deletedMessages[event.id]['modified'] = 2;
           return deletedMessages[event.id]["arg"];
         };
-  
-        // Check if we use [ DELETED ]
-        if(Boolean(storage["msg_useDeleted"]) == true) {
 
-          // Update the message rather than deleting it
+        // Default, or When NormalEphemeral and useDeleted are Disabled
+        // this is Meqativ NoDelete as Default Logging type.
+        // NO MODIFICATIONS AT ALL beside to make it compatible with this plugin
+        if( !Boolean(storage["msg_useDeleted"]) && !Boolean(storage["msg_normalEphemeral"]) ) {
+          if (!event?.id || !event?.channelId) return;
+
+          let message = storage["message"]?.trim?.() || "This message was deleted";
+
+          // check if the user using timestamp
+          if (storage["useTimestamps"]) {
+            // ternary operator checks if the user use AM/PM or not
+            message += ` (${moment().format(storage["useAMPM"] ? "hh:mm:ss.SS a" : "HH:mm:ss.SS")})`
+          }
+            
           args[0] = {
-            type: "MESSAGE_UPDATE",
-            message: {
-              ...originalMessage,
-              edited_timestamp: "invalid_timestamp",
-              content: `${originalMessage?.content} ${DeletedMessage}`,
-              guild_id: ChannelStore.getChannel(originalMessage?.channel_id)?.guild_id,
+            type: "MESSAGE_EDIT_FAILED_AUTOMOD",
+            messageData: {
+              type: 1,
+              message: {
+                channelId: event.channelId,
+                messageId: event.id,
+              },
+            },
+            errorResponseBody: {
+              code: 200000,
+              message,
             },
           };
 
@@ -95,10 +104,44 @@ const DIE = {
           return args;
         }
 
+
+        // Continue if one of them enabled
+        const originalMessage = MessageStore.getMessage(args[0].channelId, args[0].id);
+  
+        // Check if we use [ DELETED ]
+        if(Boolean(storage["msg_useDeleted"]) == true) {
+
+          // check if original message object exist
+          if (
+            !originalMessage?.author?.id || 
+            !originalMessage?.author?.username || 
+            !originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0
+          ) return args;
+
+          // Update the message rather than deleting it
+          args[0] = {
+            type: "MESSAGE_UPDATE",
+            message: {
+              ...originalMessage,
+              edited_timestamp: "invalid_timestamp",
+              content: `${originalMessage?.content} ${Deleted}`,
+              guild_id: ChannelStore.getChannel(originalMessage?.channel_id)?.guild_id,
+            },
+          };
+
+          // Self Explanatory
+          deletedMessages[event.id] = {
+            arg: args,
+            modified: 1
+          };
+
+          return args;
+        }
+
         // Check if we use normal ephemral/ white ephemeral
         if(Boolean(storage["msg_normalEphemeral"]) == true) {
 
-          // check if original message object 
+          // check if original message object exist
           if (
             !originalMessage?.author?.id || 
             !originalMessage?.author?.username || 
@@ -132,49 +175,13 @@ const DIE = {
           return args;
         }
 
-
-        
-        // i meann, this is Meqativ NoDelete as Default Logging type, cuz they asked for it
-
-        // NO MODIFICATIONS AT ALL
-
-        if (!event?.id || !event?.channelId) return;
-
-        let message = storage["message"]?.trim?.() || "This message was deleted";
-
-        // check if the user using timestamp
-        if (storage["useTimestamps"]) {
-          // ternary operator checks if the user use AM/PM or not
-          message += ` (${moment().format(storage["useAMPM"] ? "hh:mm:ss.SS a" : "HH:mm:ss.SS")})`
-        }
-          
-        args[0] = {
-          type: "MESSAGE_EDIT_FAILED_AUTOMOD",
-          messageData: {
-            type: 1,
-            message: {
-              channelId: event.channelId,
-              messageId: event.id,
-            },
-          },
-          errorResponseBody: {
-            code: 200000,
-            message,
-          },
-        };
-
-        // Self Explanatory
-        deletedMessages[event.id] = {
-          arg: args,
-          modified: 1
-        };
-
-        return args;
       }
 
       // ===========
       // patch for Message Edit
       if (event.type === "MESSAGE_UPDATE") {
+        
+        let Edited = `${storage["edit_var"]}\n\n` || "`[ EDITED ]`\n\n";   
         // if bot return, and like who want to logs bot editing its damn msg          
         const originalMessage = MessageStore.getMessage(args[0].message?.channel_id, args[0].message?.id);
 
@@ -195,13 +202,15 @@ const DIE = {
           type: "MESSAGE_UPDATE",  
           message: {
             ...newMsg,
-            content: `${originalMessage?.content}  ${EditedMessage}${event?.message?.content ?? ''}`,
+            content: `${originalMessage?.content}  ${Edited}${event?.message?.content ?? ''}`,
             guild_id: ChannelStore.getChannel(originalMessage?.channel_id)?.guild_id,
             edited_timestamp: "invalid_timestamp",
           },
         };  
         return args;
       }
+
+      // END
     });
   },
   onUnload() {
