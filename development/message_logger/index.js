@@ -190,12 +190,14 @@ const DIE = {
         // check if content is the same, (ignores embeded links, cuz those are annoying to check)
         if(event?.message?.content == originalMessage.content) return args;
         
+        let newMsg = event?.message ?? originalMessage;
         args[0] = {
           type: "MESSAGE_UPDATE",  
           message: {
-            edited_timestamp: "invalid_timestamp",
+            ...newMsg,
             content: `${originalMessage?.content}  ${EditedMessage}${event?.message?.content ?? ''}`,
             guild_id: ChannelStore.getChannel(originalMessage?.channel_id)?.guild_id,
+            edited_timestamp: "invalid_timestamp",
           },
         };  
         return args;
