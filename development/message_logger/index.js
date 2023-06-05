@@ -52,8 +52,7 @@ const DIE = {
       let typ = event.type;
   
       // Patch for Deleted Message    
-      if (typ === "MESSAGE_DELETE") {
-        let Deleted = storage["del_var"] || "`[ DELETED ]`";      
+      if (typ === "MESSAGE_DELETE") {   
 
         // This is to fix the issue with needed to click multiple time to remove the ephemerals (if using Error Ephemeral, it'll still being annoying)
         if( deletedMessages[event.id] && deletedMessages[event.id]['modified'] == 2 ) {
@@ -112,6 +111,7 @@ const DIE = {
   
         // Check if we use [ DELETED ]
         if(Boolean(storage["msg_useDeleted"]) == true) {
+          let Deleted = storage["del_var"] || "`[ DELETED ]`";   
 
           // check if original message object exist
           if (
