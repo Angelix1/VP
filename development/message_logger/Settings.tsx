@@ -3,22 +3,32 @@ import { useProxy } from "@vendetta/storage";
 import { storage } from "@vendetta/plugin";
 import { getAssetIDByName } from "@vendetta/ui/assets";
 import { General, Forms } from "@vendetta/ui/components";
+import { showToast } from "@vendetta/ui/toasts";
 
-const { FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider } = Forms;
+const { FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
 const { ScrollView, View, Text } = General;
 
 import { semanticColors } from "@vendetta/ui";
 
 const styles = stylesheet.createThemedStyleSheet({
-    text: {
-        color: semanticColors.HEADER_SECONDARY,
-        paddingLeft: "5.5%",
-        paddingRight: 10,
-        marginBottom: 10,
-        letterSpacing: 0.25,
-        fontFamily: constants.Fonts.PRIMARY_BOLD,
-        fontSize: 12
-    },
+  text: {
+    color: semanticColors.HEADER_SECONDARY,
+    paddingLeft: "4.5%",
+    paddingRight: 10,
+    marginBottom: 10,
+    letterSpacing: 0.25,
+    fontFamily: constants.Fonts.PRIMARY_BOLD,
+    fontSize: 16
+  },
+  subText: {
+    color: semanticColors.TEXT_POSITIVE,
+    paddingLeft: "5%",
+    paddingRight: 10,
+    marginBottom: 10,
+    letterSpacing: 0.25,
+    fontFamily: constants.Fonts.DISPLAY_NORMAL,
+    fontSize: 12    
+  }
 });
 
 const switches = [
@@ -52,18 +62,46 @@ const switches = [
   },
 ]
 
-export default () => {
-  const [, forceUpdate] = React.useReducer((n) => ~n, 0);
-  
+let pvars = [
+  {
+    id: "del_var",
+    title: "Customize Deleted",
+    type: "default",
+    placeholder: "`[ DELETED ]`",
+  },
+  {
+    id: "edit_var",
+    title: "Customize Edited Separator",
+    type: "default",
+    placeholder: "`[ EDITED ]`",
+  },
+]
+
+export default () => {  
   useProxy(storage);
   return (
     <ScrollView>
       <View style={{marginTop: 20}}>
         <View style={{marginTop: 10}}>
+          <Text style={[styles.text, styles.optionText]}>{"Customize Separator".toUpperCase()}</Text>
+          <View style={[styles.subText]}>{
+            pvars.map((p, i) => {
+              return(<>
+                <FormInput
+                  title={p.title}
+                  keyboardType={p.type}
+                  placeholder={p.placeholder}
+                  value={storage[p.id] ?? p.placeholder}
+                  onChange={(val) => (storage[p.id] = val.toString())}
+                />
+                {i !== switches.length - 1 && <FormDivider />}
+              </>)
+            })
+          }
+          </View>
           <Text style={[styles.text, styles.optionText]}>{"Preferences".toUpperCase()}</Text>
-          <View>{
+          <View style={[styles.subText]}>{
             switches.map((p, i) => {
-              const [val, set] = React.useState(val);
               return (<>
                 <FormRow 
                   label={p.label}
