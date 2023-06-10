@@ -191,7 +191,7 @@ const DIE = {
         row.message.content = newRow;
         row.message.edited = storage['deletedMessage'] || 'This message is deleted';
 
-        deletedMessageIds = deletedMessageIds.filter(x => x != row?.message?.id);
+//         deletedMessageIds = deletedMessageIds.filter(x => x != row?.message?.id);
 
         return row;
       })
