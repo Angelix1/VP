@@ -42,11 +42,11 @@ const DIE = {
 
       const [event] = args;
       let typ = event.type;
-  
-      const originalMessage = MessageStore.getMessage(event?.channelId, event?.id);
       
       // Patch for Deleted Message    
       if (typ === "MESSAGE_DELETE") {
+
+        const originalMessage = MessageStore.getMessage(event?.channelId, event?.id);
 
         args[0] = {
           type: 'MESSAGE_UPDATE', 
@@ -70,6 +70,8 @@ const DIE = {
       // ===========
       // patch for Message Edit
       if (typ === "MESSAGE_UPDATE") {
+
+        const originalMessage = MessageStore.getMessage(event?.message?.channel_id, event?.message?.id);
         
         let Edited = storage["editedMessage"] || "`[ EDITED ]`";
         
