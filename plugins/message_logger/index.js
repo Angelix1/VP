@@ -28,7 +28,7 @@ const DIE = {
     // patch for when editing own edited messages, it act like normal, instead of taking everything including the [EDITED] lol
     this.self = before('startEditMessage', Message, (args) => {
       
-      let Edited = storage["edit_var"].length ? storage["edit_var"] : "`[ EDITED ]`";
+      let Edited = storage["editedMessage"] || "`[ EDITED ]`";
         Edited = Edited + '\n\n';
 
       const [channelId, messageId, msg] = args;
