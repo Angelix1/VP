@@ -13,7 +13,7 @@ import { semanticColors } from "@vendetta/ui";
 const styles = stylesheet.createThemedStyleSheet({
   text: {
     color: semanticColors.HEADER_SECONDARY,
-    paddingLeft: "4.5%",
+    paddingLeft: "5.5%",
     paddingRight: 10,
     marginBottom: 10,
     letterSpacing: 0.25,
@@ -22,7 +22,7 @@ const styles = stylesheet.createThemedStyleSheet({
   },
   subText: {
     color: semanticColors.TEXT_POSITIVE,
-    paddingLeft: "5%",
+    paddingLeft: "6%",
     paddingRight: 10,
     marginBottom: 10,
     letterSpacing: 0.25,
@@ -31,50 +31,40 @@ const styles = stylesheet.createThemedStyleSheet({
   }
 });
 
-const switches = [
-  {
-    id: "msg_useDeleted",
-    default: false,
-    label: "use DELETED",
-    subLabel: "use [ DELETED ] instead of using ephemeral message. Will override Normal Ephemeral",
-    icon: "ic_edit_24px",
-  },
-  {
-    id: "msg_normalEphemeral",
-    default: false,
-    label: "use Normal Ephemeral",
-    subLabel: "use normal ephemeral message instead of red warning ephemeral message.",
-    icon: "img_feed_error_dark",
-  },
-  { 
-    id: "useTimestamps",
-    default: false,
-    label: "Enable Timestamp",
-    subLabel: "This option is for red warning ephemeral message. Show the time of deletion (if using normal ephemeral or [DELETED], this option will be ignored)",
-    icon: "ic_clock_timeout_16px"
-  },
-  { 
-    id: "useAMPM",
-    default: false, 
-    label: "Use AM/PM",
-    subLabel: "This option is for red warning ephemeral message.",
-    icon: "ic_globe_24px"
-  },
-]
+let upper = (s) => { return s.toUpperCase() };
 
 let pvars = [
   {
-    id: "del_var",
-    title: "Customize Deleted",
+    id: "deletedMessageColor",
+    title: "Customize Deleted Message Color ( DO NOT INCLUDE # )",
     type: "default",
-    placeholder: "`[ DELETED ]`",
+    placeholder: "E40303",
   },
   {
-    id: "edit_var",
+    id: "deletedMessage",
+    title: "Customize Deleted Message",
+    type: "default",
+    placeholder: "This message is deleted",
+  },
+  {
+    id: "editedMessage",
     title: "Customize Edited Separator",
     type: "default",
     placeholder: "`[ EDITED ]`",
   },
+]
+
+let log = [
+  {
+    version: 'v0.0.8',
+    patch: [
+      'Added Customizeable Text Color for Deleted Messages.',
+      'Changed Deleted Message Patch to use Discord Built-in.',
+      'Removed Option to use DELETED, NormalEphemeral, DefaultAutomodEphemeral',
+      'Removed Ephemeral Custom Settings.',
+      'Removed Ephemeral Patch.',
+    ]
+  } 
 ]
 
 export default () => {  
@@ -83,7 +73,7 @@ export default () => {
     <ScrollView>
       <View style={{marginTop: 20}}>
         <View style={{marginTop: 10}}>
-          <Text style={[styles.text, styles.optionText]}>{"Customize Separator".toUpperCase()}</Text>
+          <Text style={[styles.text, styles.optionText]}>{upper("Customize Separator")}</Text>
           <View style={[styles.subText]}>{
             pvars.map((p, i) => {
               return(<>
@@ -94,33 +84,27 @@ export default () => {
                   value={storage[p.id] ?? p.placeholder}
                   onChange={(val) => (storage[p.id] = val.toString())}
                 />
-                {i !== switches.length - 1 && <FormDivider />}
+                {i !== pvars.length - 1 && <FormDivider />}
               </>)
             })
           }
           </View>
-          <Text style={[styles.text, styles.optionText]}>{"Preferences".toUpperCase()}</Text>
-          <View style={[styles.subText]}>{
-            switches.map((p, i) => {
-              return (<>
-                <FormRow 
-                  label={p.label}
-                  subLabel={p.subLabel}
-                  leading={p.icon && <FormRow.Icon source={getAssetIDByName(p.icon)} />}
-                  trailing={
-                    ("id" in p) ? (
-                      <FormSwitch
-                        value={storage[p.id] ?? p.default}
-                        onValueChange={ (value) => (storage[p.id] = value) }
-                      />
-                    ) : undefined
-                  }
-                />
-                {i !== switches.length - 1 && <FormDivider />}
+          <Text style={[styles.subText, styles.optionText]}>{upper("Reload the Plugin to Apply Color Change")}</Text>
+          <Text style={[styles.text, styles.optionText]}>{"Changes"}</Text>
+          {
+            log.map((elem, ind) => {
+              return(<>
+                <Text style={[styles.text]}>{elem.version || "Dev Version"}</Text>
+                {
+                  elem.patch?.map(pat => {
+                    return(<>
+                      <Text style={[styles.subText]}>{`- ${pat}`}</Text>
+                    </>)
+                  })
+                }
               </>)
             })
           }
-          </View>
         </View>
       </View>
     </ScrollView>
