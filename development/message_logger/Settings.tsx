@@ -52,6 +52,22 @@ let pvars = [
     type: "default",
     placeholder: "`[ EDITED ]`",
   },
+  {
+    id: "deletedMessageColorBackground",
+    title: "Customize Deleted Background Message Color ( DO NOT INCLUDE # )",
+    type: "default",
+    placeholder: "FF2C2F",
+  },
+]
+
+const switches = [
+  {
+    id: "useBackgroundColor",
+    default: false,
+    label: "Enable Background Color",
+    subLabel: "Background Color for Deleted Message, similiar to Mention but Customizeable",
+  },
+
 ]
 
 let log = [
@@ -73,7 +89,7 @@ export default () => {
     <ScrollView>
       <View style={{marginTop: 20}}>
         <View style={{marginTop: 10}}>
-          <Text style={[styles.text, styles.optionText]}>{upper("Customize Separator")}</Text>
+          <Text style={[styles.text, styles.optionText]}>{upper("Customize")}</Text>
           <View style={[styles.subText]}>{
             pvars.map((p, i) => {
               return(<>
@@ -85,6 +101,27 @@ export default () => {
                   onChange={(val) => (storage[p.id] = val.toString())}
                 />
                 {i !== pvars.length - 1 && <FormDivider />}
+              </>)
+            })
+          }
+          </View>
+          <View style={[styles.subText]}>{
+            switches.map((p, i) => {
+              return (<>
+                <FormRow 
+                  label={p.label}
+                  subLabel={p.subLabel}
+                  leading={p.icon && <FormRow.Icon source={getAssetIDByName(p.icon)} />}
+                  trailing={
+                    ("id" in p) ? (
+                      <FormSwitch
+                        value={storage[p.id] ?? p.default}
+                        onValueChange={ (value) => (storage[p.id] = value) }
+                      />
+                    ) : undefined
+                  }
+                />
+                {i !== switches.length - 1 && <FormDivider />}
               </>)
             })
           }

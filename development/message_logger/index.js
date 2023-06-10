@@ -15,6 +15,8 @@ const { DCDChatManager } = ReactNative.NativeModules;
 /* settings IDs and Vars
 "deletedMessage"
 "editedMessage"
+"deletedMessageColorBackground"
+"useBackgroundColor"
 */
 
 let deletedMessageIds = [];
@@ -191,7 +193,19 @@ const DIE = {
         row.message.content = newRow;
         row.message.edited = storage['deletedMessage'] || 'This message is deleted';
 
-//         deletedMessageIds = deletedMessageIds.filter(x => x != row?.message?.id);
+        let savedBGColor = storage['deletedMessageColorBackground'] || "FF2C2F";
+
+        if(!savedBGColor.match(HEX_regex)) savedBGColor = "FF2C2F";
+
+        let apl = `#${ savedBGColor.toString() }33`;
+        let aplb = `#${ savedBGColor.toString() }CC`;
+
+        if(Boolean(storage['useBackgroundColor'])) {
+          row.backgroundHighlight = {
+            backgroundColor: ReactNative.processColor(apl),
+            gutterColor: ReactNative.processColor(aplb),
+          };
+        }
 
         return row;
       })
