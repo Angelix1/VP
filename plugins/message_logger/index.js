@@ -48,7 +48,7 @@ const DIE = {
       
       
        // patch for Message Edit
-      if (typ === "MESSAGE_UPDATE") {
+      if (event.type == "MESSAGE_UPDATE") {
         
         let Edited = storage["editedMessage"] || "`[ EDITED ]`";
         
@@ -79,7 +79,7 @@ const DIE = {
       }
             
       // Patch for Deleted Message    
-      if (typ === "MESSAGE_DELETE") {
+      if (typ == "MESSAGE_DELETE") {
 
         args[0] = {
           type: 'MESSAGE_UPDATE', 
