@@ -43,32 +43,11 @@ const DIE = {
       const [event] = args;
       let typ = event.type;
   
+      ///      
       const originalMessage = MessageStore.getMessage(event?.channelId, event?.id);
       
-      // Patch for Deleted Message    
-      if (typ === "MESSAGE_DELETE") {
-
-        args[0] = {
-          type: 'MESSAGE_UPDATE', 
-          channelId: originalMessage?.channel_id,
-          message: { 
-            ...originalMessage,
-            content: `${originalMessage?.content} `,
-            channel_id: originalMessage?.channel_id, 
-            guild_id: ChannelStore?.getChannel(originalMessage?.channel_id)?.guild_id,
-            timestamp: `${new Date().toJSON()}`,
-            state: 'SENT',
-          }, 
-          optimistic: false, 
-          sendMessageOptions: {}, 
-          isPushNotification: false,
-        }
-        deletedMessageIds.push(event?.id);
-        return args;
-      }
-
-      // ===========
-      // patch for Message Edit
+      
+       // patch for Message Edit
       if (typ === "MESSAGE_UPDATE") {
         
         let Edited = storage["editedMessage"] || "`[ EDITED ]`";
@@ -98,7 +77,30 @@ const DIE = {
         };  
         return args;
       }
+            
+      // Patch for Deleted Message    
+      if (typ === "MESSAGE_DELETE") {
 
+        args[0] = {
+          type: 'MESSAGE_UPDATE', 
+          channelId: originalMessage?.channel_id,
+          message: { 
+            ...originalMessage,
+            content: `${originalMessage?.content} `,
+            channel_id: originalMessage?.channel_id, 
+            guild_id: ChannelStore?.getChannel(originalMessage?.channel_id)?.guild_id,
+            timestamp: `${new Date().toJSON()}`,
+            state: 'SENT',
+          }, 
+          optimistic: false, 
+          sendMessageOptions: {}, 
+          isPushNotification: false,
+        }
+        deletedMessageIds.push(event?.id);
+        return args;
+      }
+
+      // ===========
       // END
     });
 
