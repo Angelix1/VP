@@ -193,7 +193,7 @@ const DIE = {
 
         let savedBGColor = storage['deletedMessageColorBackground'];
 
-        if(!savedBGColor.match(HEX_regex)) savedBGColor = "E40303";
+        if(!savedBGColor.match(HEX_regex)) savedBGColor = "FF2C2F";
 
         let apl = `#${ savedBGColor.toString() }33`;
 
