@@ -53,6 +53,7 @@ const DIE = {
           channelId: originalMessage?.channel_id,
           message: { 
             ...originalMessage,
+            flags: 64,
             content: `${originalMessage?.content} `,
             channel_id: originalMessage?.channel_id, 
             guild_id: ChannelStore?.getChannel(originalMessage?.channel_id)?.guild_id,
