@@ -1,5 +1,5 @@
 {
-    "name": "MessageLogger v0.0.8-dev-2",
+    "name": "MessageLogger v0.0.85-dev-5",
     "description": "Keeps deleted messages and logs edited messages, until you restart/reloads the app",
     "authors": [
       {
