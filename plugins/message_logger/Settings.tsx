@@ -75,10 +75,11 @@ let log = [
     version: 'v0.0.8',
     patch: [
       'Added Customizeable Text Color for Deleted Messages.',
-      'Changed Deleted Message Patch to use Discord Built-in.',
+      'Added Customizeable Background Color for Deleted Messages. Like Mentions',
+      'Changed Deleted Message Patch.',
+      'Fixed needing to click multiple times to dismiss a message.',
       'Removed Option to use DELETED, NormalEphemeral, DefaultAutomodEphemeral',
       'Removed Ephemeral Custom Settings.',
-      'Removed Ephemeral Patch.',
     ]
   } 
 ]
