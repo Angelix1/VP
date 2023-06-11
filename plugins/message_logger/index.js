@@ -48,6 +48,54 @@ const DIE = {
 
         const originalMessage = MessageStore.getMessage(event?.channelId, event?.id);
 
+        /* 
+          see if the message was deleted by me or other ppls, 
+          if it deleted by me, it doesnt have guildId and then fires another with one
+          but if it deleted by others, it just gives one with guildId, 
+          No test has been done for DMs
+        */
+        if(event.hasOwnProperty('guildId')) {
+          // console.log(originalMessage?.flags)
+          // handle if it has been edited before and edit it again, due double fire dispatch
+          if(originalMessage?.flags == 64) {
+            args[0] = {
+              type: 'MESSAGE_UPDATE', 
+              channelId: originalMessage?.channel_id,
+              message: originalMessage,
+              optimistic: false, 
+              sendMessageOptions: {}, 
+              isPushNotification: false,
+            };
+            return args;
+          }
+          
+          // handle if it deleted by other ppls
+          args[0] = {
+            type: 'MESSAGE_UPDATE', 
+            channelId: originalMessage?.channel_id,
+            message: { 
+              ...originalMessage,
+              flags: 64,
+              content: `${originalMessage?.content} `,
+              channel_id: originalMessage?.channel_id, 
+              guild_id: ChannelStore?.getChannel(originalMessage?.channel_id)?.guild_id,
+              timestamp: `${new Date().toJSON()}`,
+              state: 'SENT',
+            }, 
+            optimistic: false, 
+            sendMessageOptions: {}, 
+            isPushNotification: false,
+          }
+          deletedMessageIds.push(event?.id);
+          return args;
+        }
+
+        // handle dismiss
+        if(deletedMessageIds.includes(event.id)) {
+          return args;
+        }
+
+        //handle if it deleted by me
         args[0] = {
           type: 'MESSAGE_UPDATE', 
           channelId: originalMessage?.channel_id,
