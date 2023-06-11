@@ -131,6 +131,8 @@ const DIE = {
             deletedMessageIds.push({ id: event?.id, flag: 1 });
             return args;
           }
+          
+          return args;
         }
       }
 
@@ -169,6 +171,7 @@ const DIE = {
       }
 
       // END
+      return args;
     });
 
     // patch for the color
