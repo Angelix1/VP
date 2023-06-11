@@ -54,6 +54,8 @@ const DIE = {
           but if it deleted by others, it just gives one with guildId, 
           No test has been done for DMs
         */
+        // console.log(event.hasOwnProperty('guildId'))
+        // console.log(event)
         if(event.hasOwnProperty('guildId')) {
           // console.log(originalMessage?.flags)
           // handle if it has been edited before and edit it again, due double fire dispatch
@@ -90,8 +92,10 @@ const DIE = {
           return args;
         }
 
+
+        // console.log(deletedMessageIds.includes(event.id))
         // handle dismiss
-        if(deletedMessageIds.includes(event.id)) {
+        if( deletedMessageIds.includes(event.id) && (originalMessage?.flags == 64) ) {
           return args;
         }
 
