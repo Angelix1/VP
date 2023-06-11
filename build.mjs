@@ -48,47 +48,6 @@ const plugins = [
     esbuild({ minify: true }),
 ];
 
-let devPath = 'development';
-for (let plug of await readdir(`./${devPath}`)) {
-    const manifest = JSON.parse(await readFile(`./${devPath}/${plug}/manifest.json`));
-    const outPath = `./dist/${devPath}/${plug}/index.js`;    
-
-    try {
-        const bundle = await rollup({
-            input: `./${devPath}/${plug}/${manifest.main}`,
-            onwarn: () => {},
-            plugins,
-        });
-    
-        await bundle.write({
-            file: outPath,
-            globals(id) {
-                if (id.startsWith("@vendetta")) return id.substring(1).replace(/\//g, ".");
-                const map = {
-                    react: "window.React",
-                };
-
-                return map[id] || null;
-            },
-            format: "iife",
-            compact: true,
-            exports: "named",
-        });
-        await bundle.close();
-    
-        const toHash = await readFile(outPath);
-        manifest.hash = createHash("sha256").update(toHash).digest("hex");
-        manifest.main = "index.js";
-        await writeFile(`./dist/${devPath}/${plug}/manifest.json`, JSON.stringify(manifest));
-    
-        console.log(`DEVELOPMENT BUILD OF ${manifest.name}!`);
-    } catch (e) {
-        console.error("Failed to build plugin...", e);
-        process.exit(1);
-    }
-}
-
-
 // prod
 for (let plug of await readdir("./plugins")) {
     const manifest = JSON.parse(await readFile(`./plugins/${plug}/manifest.json`));
