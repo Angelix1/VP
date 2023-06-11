@@ -45,14 +45,8 @@ const DIE = {
       
       // Patch for Deleted Message    
       if (typ === "MESSAGE_DELETE") {
-
-        // return [{ type: "MESSAGE_CREATE" }];
-
-        // console.log("=".repeat(20))
-
         const Channel = ChannelStore.getChannel(event?.channelId);
         const originalMessage = MessageStore.getMessage(event?.channelId, event?.id);
-
 
         function UpdateMessage(update = false, org) {
           if(update) {
@@ -85,6 +79,9 @@ const DIE = {
           }
         }
 
+        
+        // console.log(deletedMessageIds)
+        
         // if DM
         if(Channel?.type == 1) {
           let find = deletedMessageIds.find(c => c.id == event.id)
@@ -97,8 +94,7 @@ const DIE = {
         } 
         else {
           // console.log(event)
-          // console.log(deletedMessageIds)
-          let find = deletedMessageIds.find(c => c.id == event.id)
+          let find = deletedMessageIds?.find(c => c?.id == event?.id)
           
           if(find?.flag == 2) {
             return args;
@@ -107,6 +103,7 @@ const DIE = {
           if(event.hasOwnProperty('guildId')) {
             if(find?.flag == 1) {
               args[0] = UpdateMessage(true, originalMessage)
+              deletedMessageIds?.map(x => { if(x?.id == event?.id) { x.flag = 2 } })
               return args;
             }
 
@@ -119,8 +116,9 @@ const DIE = {
             return args;
           }
 
-          if(originalMessage?.flags == 32) {
+          if(find?.flag == 1) {
             args[0] = UpdateMessage(true, originalMessage)
+            deletedMessageIds?.map(x => { if(x?.id == event?.id) { x.flag = 2 } })
             return args;
           }
 
