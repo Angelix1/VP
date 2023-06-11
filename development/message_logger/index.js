@@ -46,78 +46,94 @@ const DIE = {
       // Patch for Deleted Message    
       if (typ === "MESSAGE_DELETE") {
 
+        // return [{ type: "MESSAGE_CREATE" }];
+
+        // console.log("=".repeat(20))
+
+        const Channel = ChannelStore.getChannel(event?.channelId);
         const originalMessage = MessageStore.getMessage(event?.channelId, event?.id);
 
-        /* 
-          see if the message was deleted by me or other ppls, 
-          if it deleted by me, it doesnt have guildId and then fires another with one
-          but if it deleted by others, it just gives one with guildId, 
-          No test has been done for DMs
-        */
-        // console.log(event.hasOwnProperty('guildId'))
-        // console.log(event)
-        if(event.hasOwnProperty('guildId')) {
-          // console.log(originalMessage?.flags)
-          // handle if it has been edited before and edit it again, due double fire dispatch
-          if(originalMessage?.flags == 64) {
-            args[0] = {
-              type: 'MESSAGE_UPDATE', 
-              channelId: originalMessage?.channel_id,
-              message: originalMessage,
-              optimistic: false, 
-              sendMessageOptions: {}, 
-              isPushNotification: false,
-            };
-            return args;
-          }
-          
-          // handle if it deleted by other ppls
-          args[0] = {
-            type: 'MESSAGE_UPDATE', 
-            channelId: originalMessage?.channel_id,
-            message: { 
-              ...originalMessage,
-              flags: 64,
-              content: `${originalMessage?.content} `,
-              channel_id: originalMessage?.channel_id, 
-              guild_id: ChannelStore?.getChannel(originalMessage?.channel_id)?.guild_id,
-              timestamp: `${new Date().toJSON()}`,
-              state: 'SENT',
-            }, 
-            optimistic: false, 
-            sendMessageOptions: {}, 
-            isPushNotification: false,
-          }
-          deletedMessageIds.push(event?.id);
-          return args;
-        }
 
-
-        // console.log(deletedMessageIds.includes(event.id))
-        // handle dismiss
-        if( deletedMessageIds.includes(event.id) && (originalMessage?.flags == 64) ) {
-          return args;
-        }
-
-        //handle if it deleted by me
-        args[0] = {
-          type: 'MESSAGE_UPDATE', 
-          channelId: originalMessage?.channel_id,
-          message: { 
-            ...originalMessage,
+        function UpdateMessage(update = false, org) {
+          if(update) {
+            return {
+                type: 'MESSAGE_UPDATE', 
+                channelId: org?.channel_id,
+                message: org, 
+                optimistic: false, 
+                sendMessageOptions: {}, 
+                isPushNotification: false,
+            }
+          } 
+          else {
+            return {
+                type: 'MESSAGE_UPDATE', 
+                channelId: org?.channel_id,
+                message: { 
+                  ...org,
             flags: 64,
-            content: `${originalMessage?.content} `,
-            channel_id: originalMessage?.channel_id, 
-            guild_id: ChannelStore?.getChannel(originalMessage?.channel_id)?.guild_id,
+            content: `${org?.content} `,
+            channel_id: org?.channel_id, 
+            guild_id: Channel?.guild_id,
             timestamp: `${new Date().toJSON()}`,
             state: 'SENT',
-          }, 
-          optimistic: false, 
-          sendMessageOptions: {}, 
-          isPushNotification: false,
+                }, 
+                optimistic: true, 
+                sendMessageOptions: {}, 
+                isPushNotification: false,
+            }
+          }
         }
-        deletedMessageIds.push(event?.id);
-        return args;
+
+        // if DM
+        if(Channel?.type == 1) {
+          let find = deletedMessageIds.find(c => c.id == event.id)
+          
+          if(find.id == event.id) return args;
+          //handle if it deleted
+          args[0] = UpdateMessage(false, originalMessage)
+          deletedMessageIds.push({ id: event?.id, flag: 1 });
+          return args;
+        } 
+        else {
+          // console.log(event)
+          // console.log(deletedMessageIds)
+          let find = deletedMessageIds.find(c => c.id == event.id)
+          
+          if(find?.flag == 2) {
+            return args;
+          }
+
+          if(event.hasOwnProperty('guildId')) {
+            if(find?.flag == 1) {
+              args[0] = UpdateMessage(true, originalMessage)
+              return args;
+            }
+
+            if(find?.flag == 2) {
+              return args;
+            }
+
+            args[0] = UpdateMessage(false, originalMessage)
+            deletedMessageIds.push({ id: event?.id, flag: 1 });
+            return args;
+          }
+
+          if(originalMessage?.flags == 32) {
+            args[0] = UpdateMessage(true, originalMessage)
+            return args;
+          }
+
+          if(find?.flag == 2 && (find.id == event.id)) {
+            return args;
+          }
+
+          if(find.id != event.id) {
+            args[0] = UpdateMessage(false, originalMessage)
+            deletedMessageIds.push({ id: event?.id, flag: 1 });
+            return args;
+          }
+        }
       }
 
       // ===========
@@ -241,7 +257,7 @@ const DIE = {
       rows.forEach((row) => {
         if(row.type != 1) return;
 
-        if(!deletedMessageIds.includes(row?.message?.id)) return row;
+        if(!deletedMessageIds.find(c => c.id == row?.message?.id)) return row;
 
         let newRow = transformObject(row?.message?.content);
 
