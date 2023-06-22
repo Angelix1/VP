@@ -129,7 +129,7 @@ export default () => {
 
   return (
     <ScrollView>
-      <View style={{marginTop: 20}}>
+      <View style={{marginTop: 20, marginBottom: 20}}>
 
         <FormSection title="Plugin Setting" style={[styles.header]}>
           <FormRow 
