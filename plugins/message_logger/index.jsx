@@ -354,7 +354,7 @@ const DIE = {
                   const lats = message?.content?.split(Edited);
                   const targetMessage = lats[lats.length - 1];
 
-                  console.log(lats, targetMessage, editedMessageIds)
+                  // console.log(lats, targetMessage, editedMessageIds)
 
                   FluxDispatcher.dispatch({
                     type: "MESSAGE_UPDATE",
