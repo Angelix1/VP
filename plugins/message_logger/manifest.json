@@ -1,0 +1,14 @@
+{
+    "name": "MessageLogger 1",
+    "description": "Keeps deleted messages and logs edited messages, until you restart/reloads the app",
+    "authors": [
+      {
+        "name": "Angel~",
+        "id": "692632336961110087"
+      }
+    ],
+    "main": "index.jsx",
+    "vendetta": {
+        "icon": "ic_edit_24px"
+    }
+}
