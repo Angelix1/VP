@@ -1,4 +1,10 @@
-export default [	
+export default [
+  {
+    version: 'End Of Life',
+    patch: [
+      'This plugin will not be updated anymore, until further infos.',
+    ]
+  },	
   {
     version: 'v0.0.810',
     patch: [
