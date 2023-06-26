@@ -192,9 +192,9 @@ const DIE = {
           !originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0
         ) return args;
   
-        if(event?.message?.content == originalMessage.content) return args;
+        if(event?.message?.content == originalMessage?.content) return args;
         
-        let newMsg = event?.message ?? originalMessage;
+        let newMsg = event?.message || originalMessage;
         args[0] = {
           type: "MESSAGE_UPDATE",  
           message: {
@@ -295,30 +295,29 @@ const DIE = {
       }
 
       rows.forEach((row) => {
-        if(row?.type != 1) return row;
-
-        if(!deletedMessageIds[row?.message?.id]) return row;
-
-        let newRow = transformObject(row?.message?.content, savedColor);
-
-        row.message.content = newRow;
-        row.message.edited = storage['deletedMessage'] || 'This message is deleted';
-
-        let savedBGColor = storage['deletedMessageColorBackground'] || "FF2C2F";
-
-        if(!savedBGColor.match(HEX_regex)) savedBGColor = "FF2C2F";
-
-        let apl = `#${ savedBGColor.toString() }33`;
-        let aplb = `#${ savedBGColor.toString() }CC`;
-
-        if(Boolean(storage['useBackgroundColor'])) {
-          row.backgroundHighlight = {
-            backgroundColor: ReactNative.processColor(apl),
-            gutterColor: ReactNative.processColor(aplb),
-          };
+        if(row?.type == 1) {
+          if(deletedMessageIds[row?.message?.id]) {
+  
+            let newRow = transformObject(row?.message?.content, savedColor);
+    
+            row.message.content = newRow;
+            row.message.edited = storage['deletedMessage'] || 'This message is deleted';
+    
+            let savedBGColor = storage['deletedMessageColorBackground'] || "FF2C2F";
+    
+            if(!savedBGColor.match(HEX_regex)) savedBGColor = "FF2C2F";
+    
+            let apl = `#${ savedBGColor.toString() }33`;
+            let aplb = `#${ savedBGColor.toString() }CC`;
+    
+            if(Boolean(storage['useBackgroundColor'])) {
+              row.backgroundHighlight = {
+                backgroundColor: ReactNative.processColor(apl),
+                gutterColor: ReactNative.processColor(aplb),
+              };
+            }
+          }
         }
-
-        return row;
       })
 
       r[1] = JSON.stringify(rows);
