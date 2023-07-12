@@ -71,13 +71,17 @@ makeDefaults(storage, {
   minimal: true,
 })
 
+let self;
+let messageLogger;
+let colorText;
+let removeEditedHistory;
 
 
 const DIE = {
   onLoad() {
 
     // patch for when editing own edited messages, it act like normal, instead of taking everything including the [EDITED] lol
-    this.self = before('startEditMessage', Message, (args) => {
+    self = before('startEditMessage', Message, (args) => {
       
       let Edited = storage["editedMessage"] || "`[ EDITED ]`";
         Edited = Edited + '\n\n';
@@ -89,7 +93,7 @@ const DIE = {
     });
 
     // patch for the message
-    this.messageLogger = before("dispatch", FluxDispatcher, (args) => { 
+    messageLogger = before("dispatch", FluxDispatcher, (args) => { 
 
       const [event] = args;
       let typ = event.type;
@@ -215,119 +219,119 @@ const DIE = {
     });
 
     // patch for the color
-    this.colorText = (!storage['minimal']) && before("updateRows", DCDChatManager, (r) => {
-      let rows = JSON.parse(r[1]);
-      
-      let savedColor = storage['deletedMessageColor'] || "E40303"; // Hex
+    if (!storage['minimal']) {
+      colorText = before("updateRows", DCDChatManager, (r) => {
+        let rows = JSON.parse(r[1]);
+        
+        let savedColor = storage['deletedMessageColor'] || "E40303"; // Hex
 
-      // check if its valid hex
-      let HEX_regex = /[0-9A-Fa-f]{6}/;
+        // check if its valid hex
+        let HEX_regex = /[0-9A-Fa-f]{6}/;
 
-      if(!savedColor.match(HEX_regex)) savedColor = "E40303";
+        if(!savedColor.match(HEX_regex)) savedColor = "E40303";
 
-      function transformObject(obj) {
-        const compTypes = [
-          'text',
-          'heading',
-          's',
-          'u',
-          'em',
-          'strong',
-          'list',
-          'blockQuote'
-        ];
+        function transformObject(obj) {
+          const compTypes = [
+            'text',
+            'heading',
+            's',
+            'u',
+            'em',
+            'strong',
+            'list',
+            'blockQuote'
+          ];
 
-        if (Array.isArray(obj)) {
-          return obj.map(transformObject);
-        } 
-        else if (typeof obj === 'object' && obj !== null) {
-          const { content, type, target, context, items } = obj;
-          
-          if(!compTypes.includes(type)) return obj;
+          if (Array.isArray(obj)) {
+            return obj.map(transformObject);
+          } 
+          else if (typeof obj === 'object' && obj !== null) {
+            const { content, type, target, context, items } = obj;
+            
+            if(!compTypes.includes(type)) return obj;
 
-          if (type === 'text' && content && content.length >= 1) {
-      
-            return {
-                content: [{
-                      content: content,
-                      type: 'text'
-                  }],
-                target: 'usernameOnClick',
-                type: 'link',
-                context: {
-                    username: 1,
-                    medium: true,
-                    usernameOnClick: {
-                      action: '0',
-                      userId: '0',
-                      linkColor: ReactNative.processColor(`#${savedColor.toString()}`),
-                      messageChannelId: '0'
-                    }
-                }
-            };
-          }
-
-          const updatedContent = transformObject(content);
-          const updatedItems = items ? items.map(transformObject) : undefined;
-
-          if (updatedContent !== content || updatedItems !== items || !compTypes.includes(type)) {
-            const updatedObj = { ...obj, content: updatedContent };
-              
-              if (type === 'blockQuote' && target) {
-                  updatedObj.content = updatedContent;
-                  updatedObj.target = target;
-              }
-
-              if (type === 'list') {
-                if (updatedObj.hasOwnProperty('content')) {
-                    delete updatedObj.content;
-                }
-              }
-
-              if (items) {
-                updatedObj.items = updatedItems;
-              }
-
-            return updatedObj;
-          }
-        }
-
-        return obj;
-      }
-
-      rows.forEach((row) => {
-        if(row?.type == 1) {
-          if(deletedMessageIds[row?.message?.id]) {
-  
-            let newRow = transformObject(row?.message?.content, savedColor);
-    
-            row.message.content = newRow;
-            row.message.edited = storage['deletedMessage'] || 'This message is deleted';
-    
-            let savedBGColor = storage['deletedMessageColorBackground'] || "FF2C2F";
-    
-            if(!savedBGColor.match(HEX_regex)) savedBGColor = "FF2C2F";
-    
-            let apl = `#${ savedBGColor.toString() }33`;
-            let aplb = `#${ savedBGColor.toString() }CC`;
-    
-            if(Boolean(storage['useBackgroundColor'])) {
-              row.backgroundHighlight = {
-                backgroundColor: ReactNative.processColor(apl),
-                gutterColor: ReactNative.processColor(aplb),
+            if (type === 'text' && content && content.length >= 1) {
+        
+              return {
+                  content: [{
+                        content: content,
+                        type: 'text'
+                    }],
+                  target: 'usernameOnClick',
+                  type: 'link',
+                  context: {
+                      username: 1,
+                      medium: true,
+                      usernameOnClick: {
+                        action: '0',
+                        userId: '0',
+                        linkColor: ReactNative.processColor(`#${savedColor.toString()}`),
+                        messageChannelId: '0'
+                      }
+                  }
               };
             }
+
+            const updatedContent = transformObject(content);
+            const updatedItems = items ? items.map(transformObject) : undefined;
+
+            if (updatedContent !== content || updatedItems !== items || !compTypes.includes(type)) {
+              const updatedObj = { ...obj, content: updatedContent };
+                
+                if (type === 'blockQuote' && target) {
+                    updatedObj.content = updatedContent;
+                    updatedObj.target = target;
+                }
+
+                if (type === 'list') {
+                  if (updatedObj.hasOwnProperty('content')) {
+                      delete updatedObj.content;
+                  }
+                }
+
+                if (items) {
+                  updatedObj.items = updatedItems;
+                }
+
+              return updatedObj;
+            }
           }
+
+          return obj;
         }
-      })
 
-      r[1] = JSON.stringify(rows);
+        rows.forEach((row) => {
+          if(row?.type == 1) {
+            if(deletedMessageIds[row?.message?.id]) {
+    
+              let newRow = transformObject(row?.message?.content, savedColor);
+      
+              row.message.content = newRow;
+              row.message.edited = storage['deletedMessage'] || 'This message is deleted';
+      
+              let savedBGColor = storage['deletedMessageColorBackground'] || "FF2C2F";
+      
+              if(!savedBGColor.match(HEX_regex)) savedBGColor = "FF2C2F";
+      
+              let apl = `#${ savedBGColor.toString() }33`;
+              let aplb = `#${ savedBGColor.toString() }CC`;
+      
+              if(Boolean(storage['useBackgroundColor'])) {
+                row.backgroundHighlight = {
+                  backgroundColor: ReactNative.processColor(apl),
+                  gutterColor: ReactNative.processColor(aplb),
+                };
+              }
+            }
+          }
+        })
 
-      return r;
-    });
+        r[1] = JSON.stringify(rows);
+      });
+    }
 
     // patch for removing edited message history
-    this.removeEditedHistory = before("openLazy", ActionSheet, (ctx) => {
+    removeEditedHistory = before("openLazy", ActionSheet, (ctx) => {
       const [component, args, actionMessage] = ctx
       if (args !== "MessageLongPressActionSheet") return;
       
@@ -383,10 +387,10 @@ const DIE = {
 
   },
   onUnload() {
-    this.self?.();
-    this.colorText?.();
-    this.messageLogger?.();
-    this.removeEditedHistory?.()
+    self?.();
+    colorText?.();
+    messageLogger?.();
+    removeEditedHistory?.()
   },
   settings: Settings
 }
