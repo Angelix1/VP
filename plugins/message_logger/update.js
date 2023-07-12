@@ -10,7 +10,7 @@ export default [
     patch: [
       'Added minimalistic option',
     ]
-  }	
+  },
   {
     version: 'v0.0.810',
     patch: [
