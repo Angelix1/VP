@@ -4,7 +4,13 @@ export default [
     patch: [
       'This plugin will not be updated anymore, until further infos.',
     ]
-  },	
+  },
+  {
+    version: 'v0.0.811',
+    patch: [
+      'Added minimalistic option',
+    ]
+  }	
   {
     version: 'v0.0.810',
     patch: [

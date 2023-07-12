@@ -145,6 +145,21 @@ export default () => {
           />
           
           { storage['customize'] && (
+              <View style={[styles.subText]}>
+                <FormRow 
+                  label='Minimalistic Settings'
+                  subLabel='Removes all Styling (Enabled by Default)'
+                  trailing={
+                    <FormSwitch
+                      value={storage['minimal'] ?? true}
+                      onValueChange={ (value) => (storage['minimal'] = value) }
+                    />
+                  }
+                />
+              </View>
+          ) }
+
+          { storage['customize'] && (
               <View style={[styles.subText]}>{
                 pvars.map((p, i) => {
                   return(<>

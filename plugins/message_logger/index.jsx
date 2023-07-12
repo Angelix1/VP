@@ -68,6 +68,7 @@ makeDefaults(storage, {
   ignore: false,
   ignoreBots: false,
   users: [],
+  minimal: true,
 })
 
 
@@ -214,7 +215,7 @@ const DIE = {
     });
 
     // patch for the color
-    this.colorText = before("updateRows", DCDChatManager, (r) => {
+    this.colorText = (!storage['minimal']) && before("updateRows", DCDChatManager, (r) => {
       let rows = JSON.parse(r[1]);
       
       let savedColor = storage['deletedMessageColor'] || "E40303"; // Hex
