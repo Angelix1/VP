@@ -181,9 +181,7 @@ const DIE = {
   
         if(event?.message?.content == originalMessage?.content) return args;
 
-        if( storage["ignoreBots"] && event?.message?.author?.bot ) {
-          return args;
-        }
+        if(args[0].message?.author?.bot || originalMessage?.author?.bot) return args;
 
         if( 
           storage?.users?.some(user => user?.id == event?.message?.author?.id) || 
