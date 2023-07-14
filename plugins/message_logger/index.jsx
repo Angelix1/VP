@@ -118,13 +118,6 @@ const DIE = {
         if( storage?.ignoreBots && originalMessage?.author?.bot ) {
           return args;
         }
-
-        if( 
-          storage?.users?.some(user => user?.id == originalMessage?.author?.id) || 
-          storage?.users?.some(user => user?.username == originalMessage?.author?.username)
-          ) {
-          return args;
-        }
   
         // check if original message object exist
         if (
@@ -132,6 +125,13 @@ const DIE = {
           !originalMessage?.author?.username || 
           !originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0
         ) return args;
+
+        if( 
+          storage?.users?.some(user => user?.id == originalMessage?.author?.id) || 
+          storage?.users?.some(user => user?.username == originalMessage?.author?.username)
+          ) {
+          return args;
+        }
 
         args[0] = {
           type: 'MESSAGE_UPDATE', 
@@ -172,24 +172,11 @@ const DIE = {
           return args;
         }
 
-        if( storage?.ignoreBots && event?.message?.author?.bot ) {
-          return args;
-        }
-
-        if( 
-          storage?.users?.some(user => user?.id == event?.message?.author?.id) || 
-          storage?.users?.some(user => user?.username == event?.message?.author?.username)
-          ) {
+        if( storage["ignoreBots"] && event?.message?.author?.bot ) {
           return args;
         }
 
         const originalMessage = MessageStore.getMessage(event?.message?.channel_id, event?.message?.id);
-        
-        let Edited = storage["editedMessage"] || "`[ EDITED ]`";
-        
-        Edited = Edited + '\n\n';
-
-        if(args[0].message?.author?.bot || originalMessage?.author?.bot) return args;
         
         if (
           !originalMessage?.author?.id || 
@@ -198,6 +185,17 @@ const DIE = {
         ) return args;
   
         if(event?.message?.content == originalMessage?.content) return args;
+
+        if( 
+          storage?.users?.some(user => user?.id == event?.message?.author?.id) || 
+          storage?.users?.some(user => user?.username == event?.message?.author?.username)
+          ) {
+          return args;
+        }
+        
+        let Edited = storage["editedMessage"] || "`[ EDITED ]`";
+        
+        Edited = Edited + '\n\n';
         
         let newMsg = event?.message || originalMessage;
         args[0] = {
@@ -214,8 +212,6 @@ const DIE = {
         return args;
       }
 
-      // END
-      return args;
     });
 
     // patch for the color
