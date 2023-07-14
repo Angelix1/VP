@@ -97,6 +97,17 @@ const DIE = {
 
       const [event] = args;
       let typ = event.type;
+
+      const originalMessage = MessageStore.getMessage(
+        (event?.message?.channel_id || event?.channelId), 
+        (event?.message?.id || event?.id)
+      );
+      
+      if (
+        !originalMessage?.author?.id || 
+        !originalMessage?.author?.username || 
+        !originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0
+      ) return args;
       
       // Patch for Deleted Message    
       if (typ === "MESSAGE_DELETE") {
@@ -110,10 +121,6 @@ const DIE = {
           deletedMessageIds[event.id]['modified'] = 2;
           return deletedMessageIds[event.id]["arg"];
         };
-
-
-        // Continue if one of them enabled
-        const originalMessage = MessageStore.getMessage(args[0].channelId, args[0].id);
 
         if( storage?.ignoreBots && originalMessage?.author?.bot ) {
           return args;
@@ -171,20 +178,12 @@ const DIE = {
         if(event?.removeHistory) {
           return args;
         }
+  
+        if(event?.message?.content == originalMessage?.content) return args;
 
         if( storage["ignoreBots"] && event?.message?.author?.bot ) {
           return args;
         }
-
-        const originalMessage = MessageStore.getMessage(event?.message?.channel_id, event?.message?.id);
-        
-        if (
-          !originalMessage?.author?.id || 
-          !originalMessage?.author?.username || 
-          !originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0
-        ) return args;
-  
-        if(event?.message?.content == originalMessage?.content) return args;
 
         if( 
           storage?.users?.some(user => user?.id == event?.message?.author?.id) || 
