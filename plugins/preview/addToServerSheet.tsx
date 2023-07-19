@@ -1,7 +1,7 @@
 import { find, findByProps } from "@vendetta/metro";
 import { constants, ReactNative } from "@vendetta/metro/common";
 import { Forms } from "@vendetta/ui/components";
-import AddToServer from "./AddToServer";
+import AddToServer from "./addToServer";
 
 const LazyActionSheet = findByProps("openLazy", "hideActionSheet");
 
