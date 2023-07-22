@@ -1,0 +1,14 @@
+{
+    "name": "Angel's Utilities",
+    "description": "Angel's Utilities plugin filled with QOL",
+    "authors": [
+        {
+            "name": "Angelix",
+            "id": "692632336961110087"
+        }
+    ],
+    "main": "index.tsx",
+    "vendetta": {
+        "icon": "ic_gear"
+    }
+}
