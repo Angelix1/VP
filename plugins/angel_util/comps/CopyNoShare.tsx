@@ -12,9 +12,12 @@ const ActionSheet = findByProps("openLazy", "hideActionSheet");
 
 const targetIcon = <FormIcon style={{ opacity: 1 }} source={getAssetIDByName("copy")} />;
 
+storage.bool.copy_no_share ??= false
+let en = storage.bool.copy_no_share;
+
 // Just for a bit of separation
 export default [
-	storage.bool.copy_no_share && before("openLazy", ActionSheet, ([component, key]) => {
+	en && before("openLazy", ActionSheet, ([component, key]) => {
 		if (key !== "MediaShareActionSheet") return;
 		component.then((instance) => {
 			const unpatchInstance = after("default", instance, ([{ syncer }], res) => {

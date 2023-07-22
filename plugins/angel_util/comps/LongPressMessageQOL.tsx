@@ -12,6 +12,10 @@ const DiscordNavigator = getByProps("getRenderCloseButton")
 const { default: Navigator, getRenderCloseButton } = DiscordNavigator
 const { FormRow, FormIcon } = Forms
 
+
+storage.bool.lpm_qol ??= false
+let en = storage.bool.lpm_qol;
+
 export default [
     storage.bool.lpm_qol && before("openLazy", ActionSheet, (ctx) => {
         const [component, args, actionMessage] = ctx;

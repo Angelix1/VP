@@ -78,6 +78,10 @@ settings.
 export default () => {  
   useProxy(storage);
 
+  storage.bool.copy_no_share ??= false;
+  storage.bool.lpm_qol ??= false;
+  storage.settings.patch ??= false;
+
   return (
     <ScrollView>
       <View style={{marginTop: 20, marginBottom: 20}}>
