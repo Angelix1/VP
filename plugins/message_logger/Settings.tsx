@@ -10,7 +10,7 @@ import { General, Forms } from "@vendetta/ui/components";
 import { showToast } from "@vendetta/ui/toasts";
 
 const { ScrollView, View, Text, TouchableOpacity, TextInput } = General;
-const { FormLabel, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
+const { FormLabel, FormIcon, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
 
 import { semanticColors } from "@vendetta/ui";
 
@@ -45,7 +45,6 @@ const styles = stylesheet.createThemedStyleSheet({
 
 
 // icons
-const Icon = findByName("Icon");
 const Add = getAssetIDByName("ic_add_24px");
 
 // props
@@ -83,6 +82,12 @@ let pvars = [
 ]
 
 const switches = [
+  {
+    id: "minimal",
+    default: true,
+    label: "Minimalistic Settings",
+    subLabel: "Removes all Styling (Enabled by Default)",
+  },
   {
     id: "useBackgroundColor",
     default: false,
@@ -135,7 +140,7 @@ export default () => {
           <FormRow 
             label='Customization'
             subLabel='Show customization for the plugin'
-            leading={<FormRow.Icon source={getAssetIDByName('ic_category_16px')} />}
+            leading={<FormIcon style={{ opacity: 1 }} source={getAssetIDByName("ic_category_16px")} />}
             trailing={
               <FormSwitch
                 value={storage['customize'] ?? false}
@@ -143,21 +148,37 @@ export default () => {
               />
             }
           />
+
+          { storage['customize'] && (
+            <FormRow 
+              label="Reload the Plugin to Apply Color Change"
+            />
+          ) }
           
           { storage['customize'] && (
-              <View style={[styles.subText]}>
-                <FormRow 
-                  label='Minimalistic Settings'
-                  subLabel='Removes all Styling (Enabled by Default)'
-                  trailing={
-                    <FormSwitch
-                      value={storage['minimal'] ?? true}
-                      onValueChange={ (value) => (storage['minimal'] = value) }
+              <View style={[styles.subText]}>{
+                switches.map((p, i) => {
+                  return (<>
+                    <FormRow 
+                      label={p.label}
+                      subLabel={p.subLabel}
+                      leading={p.icon && <FormIcon style={{ opacity: 1 }} source={getAssetIDByName(p.icon)} />}
+                      trailing={
+                        ("id" in p) ? (
+                          <FormSwitch
+                            value={storage[p.id] ?? p.default}
+                            onValueChange={ (value) => (storage[p.id] = value) }
+                          />
+                        ) : undefined
+                      }
                     />
-                  }
-                />
+                    {i !== switches.length - 1 && <FormDivider />}
+                  </>)
+                })
+              }
               </View>
-          ) }
+          )} 
+
 
           { storage['customize'] && (
               <View style={[styles.subText]}>{
@@ -175,33 +196,7 @@ export default () => {
                 })
               }
               </View>
-          ) }
-
-          { storage['customize'] && (
-              <View style={[styles.subText]}>{
-                switches.map((p, i) => {
-                  return (<>
-                    <FormRow 
-                      label={p.label}
-                      subLabel={p.subLabel}
-                      leading={p.icon && <FormRow.Icon source={getAssetIDByName(p.icon)} />}
-                      trailing={
-                        ("id" in p) ? (
-                          <FormSwitch
-                            value={storage[p.id] ?? p.default}
-                            onValueChange={ (value) => (storage[p.id] = value) }
-                          />
-                        ) : undefined
-                      }
-                    />
-                    {i !== switches.length - 1 && <FormDivider />}
-                  </>)
-                })
-              }
-              </View>
-          )} 
-
-          { storage['customize'] && (<Text style={[styles.subText, styles.optionText]}>{upper("Reload the Plugin to Apply Color Change")}</Text>) }
+          )}
 
         </FormSection>
 
@@ -220,7 +215,7 @@ export default () => {
               onPress={listIgnore}
               trailing={
                 <TouchableOpacity onPress={listIgnore}>
-                  <Icon source={Add} />
+                  <FormIcon style={{ opacity: 1 }} source={Add} />
                 </TouchableOpacity>
             }
             />
@@ -231,7 +226,7 @@ export default () => {
           <FormRow 
             label='Show Changes'
             subLabel='Show New stuff, Fixes, etc for the plugin'
-            leading={<FormRow.Icon source={getAssetIDByName('ic_info')} />}
+            leading={<FormIcon style={{ opacity: 1 }} source={getAssetIDByName("ic_info")} />}
             trailing={
               <FormSwitch
                 value={storage['showChanges'] ?? false}

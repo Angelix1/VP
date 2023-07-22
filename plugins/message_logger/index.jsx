@@ -13,10 +13,9 @@ const MessageStore = findByProps('getMessage', 'getMessages');
 const ChannelStore = findByProps("getChannel", "getDMFromUserId");
 const ActionSheet = findByProps("openLazy", "hideActionSheet");
 const { getUser } = findByProps('getUser');
-const Icon = findByName("Icon")
 
 const { DCDChatManager } = ReactNative.NativeModules;
-const { FormRow } = Forms
+const { FormRow, FormIcon } = Forms
 
 
 /* settings IDs and Vars
@@ -133,9 +132,11 @@ const DIE = {
           !originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0
         ) return args;
 
-        if( 
-          storage?.users?.some(user => user?.id == originalMessage?.author?.id) || 
-          storage?.users?.some(user => user?.username == originalMessage?.author?.username)
+        if(
+            storage?.users?.length > 0 && ( 
+              storage?.users?.some(user => user?.id == originalMessage?.author?.id) || 
+              storage?.users?.some(user => user?.username == originalMessage?.author?.username)
+            )
           ) {
           return args;
         }
@@ -175,17 +176,25 @@ const DIE = {
 
         // console.log(event)
 
+        // console.log(originalMessage)
+
         if(event?.removeHistory) {
           return args;
         }
-  
-        if(event?.message?.content == originalMessage?.content) return args;
+        
+        let checkOne = event?.message?.content == originalMessage?.content;
+        let checkTwo = event?.message?.embeds.some(emb => (emb?.url == originalMessage?.content || emb?.thumbnail?.url == originalMessage?.content) )
+
+        // idk, Fuck you Embeded Links
+        if(checkOne || checkTwo) return args;
 
         if(args[0].message?.author?.bot || originalMessage?.author?.bot) return args;
 
-        if( 
-          storage?.users?.some(user => user?.id == event?.message?.author?.id) || 
-          storage?.users?.some(user => user?.username == event?.message?.author?.username)
+        if(
+            storage?.users?.length > 0 && ( 
+              storage?.users?.some(user => user?.id == originalMessage?.author?.id) || 
+              storage?.users?.some(user => user?.username == originalMessage?.author?.username)
+            )
           ) {
           return args;
         }
@@ -342,7 +351,7 @@ const DIE = {
             buttons.unshift(
               <FormRow
                 label="Remove EDITED Log History"
-                leading={<Icon source={getAssetIDByName("ic_edit_24px")} />}
+                leading={<FormIcon style={{ opacity: 1 }} source={getAssetIDByName("ic_edit_24px")} />}
                 onPress={() => {
 
                   let Edited = storage["editedMessage"] || "`[ EDITED ]`";

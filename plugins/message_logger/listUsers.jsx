@@ -11,10 +11,13 @@ import { showToast } from "@vendetta/ui/toasts";
 import { showConfirmationAlert } from "@vendetta/ui/alerts";
 
 const { ScrollView, View, Text, TouchableOpacity, TextInput } = General;
-const { FormLabel, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
+const { FormLabel, FormIcon, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
+
+function addIcon(i, dr) {
+    return <FormIcon style={{ opacity: 1 }} source={ dr ? i : getAssetIDByName(i)} />
+}
 
 // find stuff
-const Icon = findByName("Icon");
 const useIsFocused = findByName("useIsFocused");
 const { BottomSheetFlatList } = findByProps("BottomSheetScrollView");
 const { getUser } = findByProps('getUser');
@@ -108,7 +111,7 @@ export default function ListUsers() {
                 { users.length > 0 && (
                     <FormRow
                         label="Clear List"
-                        trailing={<Forms.FormRow.Icon source={Trash} />}
+                        trailing={addIcon(Trash, true)}
                         onPress={() => {
                             if (users.length !== 0) {
                                 showConfirmationAlert({
@@ -159,7 +162,7 @@ export default function ListUsers() {
                     trailing={
                         <TouchableOpacity 
                             onPress={addNewUser}>
-                                <Icon source={Add} />
+                                {addIcon(Add, true)}
                         </TouchableOpacity>
                     }
                 />

@@ -8,9 +8,8 @@ import { semanticColors, rawColors } from "@vendetta/ui";
 import { showToast } from "@vendetta/ui/toasts";
 
 const { ScrollView, View, Text, TouchableOpacity, TextInput, Image, Animated } = General;
-const { FormLabel, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
+const { FormLabel, FormIcon, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
 // find stuff
-const Icon = findByName("Icon");
 const useIsFocused = findByName("useIsFocused");
 const { BottomSheetFlatList } = findByProps("BottomSheetScrollView");
 const UserStore = findByStoreName("UserStore");
@@ -22,6 +21,11 @@ const Mod = getAssetIDByName("ic_arrow");
 const Remove = getAssetIDByName("ic_minus_circle_24px");
 const Checkmark = getAssetIDByName("Check");
 const Crossmark = getAssetIDByName("Small");
+
+function addIcon(i) {
+    return <FormIcon style={{ opacity: 1 }} source={getAssetIDByName(i)} />
+}
+
 
 const styles = stylesheet.createThemedStyleSheet({
     basicPad: {
@@ -137,7 +141,7 @@ export default function AddUser({ index }) {
                     <FormSection title="User Setting" style={[styles.header]}>
                         <FormRow
                             label="Find User Id or Username"
-                            leading={<FormRow.Icon source={getAssetIDByName('ic_search')} />}
+                            leading={addIcon('ic_search')}
                             onPress={() => {
                                 if(user && !object.username?.length) {
                                     object.username = user.username;
@@ -165,7 +169,7 @@ export default function AddUser({ index }) {
                         <FormRow 
                             label='User is webhook?'
                             subLabel='User is webhook or system, and not BOT or Normal User.'
-                            leading={<FormRow.Icon source={getAssetIDByName('ic_webhook_24px')} />}
+                            leading={addIcon('ic_webhook_24px')}
                             trailing={
                                 <FormSwitch
                                     value={object?.isWebhook || false}
@@ -178,7 +182,7 @@ export default function AddUser({ index }) {
                         user && (
                         <FormRow 
                             label={'Show User Profile'}
-                            leading={<FormRow.Icon source={getAssetIDByName('ic_info')} />}
+                            leading={addIcon('ic_info')}
                             trailing={
                                 <FormSwitch
                                     value={object?.showUser || false}
@@ -200,7 +204,7 @@ export default function AddUser({ index }) {
                                         source={() => {
                                             let pfp = user?.getAvatarURL?.()?.replace?.("webp", "png");
                                             if (!pfp) {
-                                                pfp = "https://cdn.discordapp.com/embed/avatars/1.png?size=300";
+                                                pfp = "https://cdn.discordapp.com/embed/avatars/1.png";
                                             }
 
                                             return { uri: pfp }
