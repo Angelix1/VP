@@ -1,10 +1,5 @@
 import { storage } from "@vendetta/plugin";
 
-
-// External Files
-import CNS from './comps/CopyNoShare'
-import LPMQOL from './comps/LongPressMessageQOL'
-
 // Functions
 function makeDefaults(object, defaults): void {
   if (object != undefined) {
@@ -30,6 +25,10 @@ makeDefaults(storage, {
     patch: false
   }
 })
+
+// External Files
+import CNS from './comps/CopyNoShare'
+import LPMQOL from './comps/LongPressMessageQOL'
 
 const patches = [
   ...CNS,
