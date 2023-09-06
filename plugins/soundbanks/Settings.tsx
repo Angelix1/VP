@@ -97,6 +97,8 @@ export default function Settings() {
         }
     */
 
+    const bufferForIDs = 10_000;
+
     const Links = [
         {
             label: 'Vine Boom SFX',
@@ -131,8 +133,6 @@ export default function Settings() {
             }
         }
     ]
-
-    const bufferForIDs = 10_000;
 
     const addSound = () => {
         if( storage.soundDatas.some(o => o.sound_id == newID) )
