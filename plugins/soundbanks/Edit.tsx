@@ -43,6 +43,7 @@ export default function Edit({ index }) {
 	useProxy(storage);
 
 	const navigation = NavigationNative.useNavigation();
+    const bufferForIDs = 10_000;
 
     // console.log(storage.soundDatas)
 
@@ -54,7 +55,7 @@ export default function Edit({ index }) {
                     <FormSection title="Sound ID" style={[styles.header]}>                        
 
                         <Text style={[styles.basicPad, styles.flagsText]}>{
-                            `${object.sound_id ?? 0}`
+                            `${bufferForIDs - object.sound_id ?? 'UNKNOWN'}`
                         }</Text>
 
                         <FormInput
@@ -71,7 +72,7 @@ export default function Edit({ index }) {
                         />
                         {!storage.soundDatas[index].use_regex && <>
                             <FormInput
-                                title="Normal Match (if included once)"
+                                title="Normal Match (if included once in a message)"
                                 placeholder="cat"
                                 value={object?.sound_match}
                                 onChange={(v: string) => object.sound_match = v}

@@ -101,26 +101,53 @@ export default function Settings() {
         {
             label: 'Vine Boom SFX',
             callback: () => {
-                clipboard.setString('https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/chatsounds/autoadd/memes/overused%20thud.ogg')
-                showToast('Copied Vine Boom SFX Sound', Checkmark)
+                storage.soundDatas.push({
+                    sound_id: bufferForIDs + storage.soundDatas.length,
+                    sound_name: 'Vine Boom SFX',
+                    sound_url: 'https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/chatsounds/autoadd/memes/overused%20thud.ogg',
+                    sound_match: 'moyai',
+                    sound_regex: "((<a?\:)?.*?moy?ai.*?(\:>)?|🗿)",
+                    regex_flag: "gi",
+                    repeat_sound: false,
+                    use_regex: false
+                })
+                showToast('Vine Boom Added', Checkmark)
             }
         },
         {
             label: 'Discordo',
             callback: () => {
-                clipboard.setString('https://discord.com/assets/ae7d16bb2eea76b9b9977db0fad66658.mp3')
-                showToast('Copied Discordo Sound', Checkmark)
+                storage.soundDatas.push({
+                    sound_id: bufferForIDs + storage.soundDatas.length,
+                    sound_name: 'Discordo SFX',
+                    sound_url: 'https://discord.com/assets/ae7d16bb2eea76b9b9977db0fad66658.mp3',
+                    sound_match: 'discordo',
+                    sound_regex: "(dc|discord(o)?)",
+                    regex_flag: "gi",
+                    repeat_sound: false,
+                    use_regex: false
+                })
+                showToast('Discordo Added', Checkmark)
             }
         }
     ]
 
+    const bufferForIDs = 10_000;
+
     const addSound = () => {
         if( storage.soundDatas.some(o => o.sound_id == newID) )
-            return showToast('Sound ID must be unique.', Crossmark)
+            return showToast('[SOUNDBANKS] Sound ID must be unique.', Crossmark)
 
         if(newID) {
             const NID = Number(newID);
-            if(isNaN(NID)) return showToast('[SOUNDBANKS] Sound ID must be Number.', Crossmark)
+            if(isNaN(NID)) return showToast('[SOUNDBANKS] Sound ID must be Number.', Crossmark);
+
+            // Additional Check cuz im paranoid
+            if(NID < 0) return showToast('[SOUNDBANKS] Sound ID cannot be negative', Crossmark);
+
+            NID = Math.round(Math.abs(NID));
+
+            NID = NID + bufferForIDs;
 
             storage.soundDatas.push({
                 sound_id: NID,
@@ -194,8 +221,8 @@ export default function Settings() {
                                             label={
                                                 (
                                                     (comp?.sound_name.length > 0) ? 
-                                                        (`${comp?.sound_name} [ ${comp?.sound_id} ]`) : 
-                                                            comp?.sound_id
+                                                        (`${comp?.sound_name} [ ${bufferForIDs - comp?.sound_id} ]`) : 
+                                                            (bufferForIDs - comp?.sound_id)
                                                 ) || "Unknown"
                                             }
                                             trailing={<FormArrow />}
