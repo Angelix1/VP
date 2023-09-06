@@ -42,10 +42,11 @@ const promiseSound = (SURL, SID) =>
 function PlaySound(URL, ID, repeat = 1) {
 
   let SoundDuration = undefined;
+  const DefaultDuration = 2_000;
 
   wasPlayingSound = true;
   promiseSound(URL, ID).then(async soundMeta => {
-    SoundDuration = soundMeta.duration
+    SoundDuration = soundMeta?.duration ?? DefaultDuration;
 
     let loopPlays = false, loopTm = null;
 
@@ -73,8 +74,7 @@ function PlaySound(URL, ID, repeat = 1) {
 
   }).catch(err => {
     alert('[SOUNDBANKS] ERROR!!! CHECK DEBUG LOGS')
-    console.log(err)
-
+    console.log('[SOUNDBANKS LOG] ' + err)
   })
 }
 
@@ -124,16 +124,11 @@ function onMessage(event) {
 export default {
   onLoad: async () => {
     storage.soundDatas ??= [];
-
-
+    
     FluxDispatcher.subscribe("MESSAGE_CREATE", onMessage);
-    // FluxDispatcher.subscribe("MESSAGE_REACTION_ADD", onReaction);
-
-
   },
   onUnload: async () => {  
     FluxDispatcher.unsubscribe("MESSAGE_CREATE", onMessage);
-    // FluxDispatcher.unsubscribe("MESSAGE_REACTION_ADD", onReaction);
   },
   settings: Settings
 }
