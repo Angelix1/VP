@@ -55,7 +55,7 @@ export default function Edit({ index }) {
                     <FormSection title="Sound ID" style={[styles.header]}>                        
 
                         <Text style={[styles.basicPad, styles.flagsText]}>{
-                            `${bufferForIDs - object.sound_id ?? 'UNKNOWN'}`
+                            `${object.sound_id - bufferForIDs ?? 'UNKNOWN'}`
                         }</Text>
 
                         <FormInput

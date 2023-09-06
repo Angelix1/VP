@@ -139,8 +139,9 @@ export default function Settings() {
             return showToast('[SOUNDBANKS] Sound ID must be unique.', Crossmark)
 
         if(newID) {
+            
             let NID = Number(newID);
-            if(isNaN(NID)) return showToast('[SOUNDBANKS] Sound ID must be Number', Crossmark);
+            if(isNaN(NID)) return showToast('[SOUNDBANKS] Sound ID must be Number.', Crossmark);
 
             // Additional Check cuz im paranoid
             if(NID < 0) return showToast('[SOUNDBANKS] Sound ID cannot be negative', Crossmark);
@@ -221,8 +222,8 @@ export default function Settings() {
                                             label={
                                                 (
                                                     (comp?.sound_name.length > 0) ? 
-                                                        (`${comp?.sound_name} [ ${bufferForIDs - comp?.sound_id} ]`) : 
-                                                            (bufferForIDs - comp?.sound_id)
+                                                        (`${comp?.sound_name} [ ${comp?.sound_id - bufferForIDs} ]`) : 
+                                                            (comp?.sound_id - bufferForIDs)
                                                 ) || "Unknown"
                                             }
                                             trailing={<FormArrow />}
