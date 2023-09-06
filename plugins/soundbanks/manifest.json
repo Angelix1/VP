@@ -1,0 +1,14 @@
+{
+    "name": "SoundBanks v0.0.15",
+    "description": "Plays custom sounds if certain rules matches.",
+    "authors": [
+        {
+            "name": "Angel~",
+            "id": "692632336961110087"
+        }
+    ],
+    "main": "index.js",
+    "vendetta": {
+        "icon": "speaker"
+    }
+}
