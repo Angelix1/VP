@@ -17,10 +17,12 @@ const STATIC_AUDIO_REGEX = /((http(s)?\:\/\/)(((?!\?).)+\.(mp3|ogg|wav)))/i;
 // const SoundArray = [
 //   {
 //     sound_id: 123456789,
+//     sound_name: 'Discordo',
 //     sound_url: "https://discord.com/assets/ae7d16bb2eea76b9b9977db0fad66658.mp3",
 //     sound_match: "coom",
 //     sound_regex: null,
 //     regex_flag: null,
+//     repeat_sound: false,
 //     use_regex: false
 //   }
 // ]
@@ -114,7 +116,7 @@ function onMessage(event) {
             }
             break;
           }
-          continue;
+          // continue;
         }
       }
     }
