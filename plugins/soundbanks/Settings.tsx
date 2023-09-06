@@ -139,8 +139,8 @@ export default function Settings() {
             return showToast('[SOUNDBANKS] Sound ID must be unique.', Crossmark)
 
         if(newID) {
-            const NID = Number(newID);
-            if(isNaN(NID)) return showToast('[SOUNDBANKS] Sound ID must be Number.', Crossmark);
+            let NID = Number(newID);
+            if(isNaN(NID)) return showToast('[SOUNDBANKS] Sound ID must be Number', Crossmark);
 
             // Additional Check cuz im paranoid
             if(NID < 0) return showToast('[SOUNDBANKS] Sound ID cannot be negative', Crossmark);
