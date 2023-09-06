@@ -3,18 +3,16 @@ import Settings from "./Settings";
 
 import { storage } from "@vendetta/plugin";
 
-import {findByStoreName, findByProps} from "@vendetta/metro";
-import {ReactNative, FluxDispatcher} from "@vendetta/metro/common";
-import { getAssetIDByName } from "@vendetta/ui/assets";
+import { findByStoreName } from "@vendetta/metro";
+import { ReactNative, FluxDispatcher } from "@vendetta/metro/common";
 
 const { DCDSoundManager } = ReactNative.NativeModules;
-const SelectedChannelStore = findByStoreName("SelectedChannelStore");
+const selectedChannelStore = findByStoreName("SelectedChannelStore");
 
-const Warning = getAssetIDByName("ic_warning_24px");
 
-const STATIC_AUDIO_REGEX = /((http(s)?\:\/\/)(((?!\?).)+\.(mp3|ogg|wav)))/i;
+const staticAudioRegex = /((http(s)?\:\/\/)(((?!\?).)+\.(mp3|ogg|wav)))/i;
 
-// const SoundArray = [
+// const soundArray = [
 //   {
 //     sound_id: 123456789,
 //     sound_name: 'Discordo',
@@ -31,7 +29,7 @@ let wasPlayingSound = false;
 
 storage.soundDatas ??= [];
 
-const SoundArray = storage.soundDatas;
+const soundArray = storage.soundDatas;
 
 
 const promiseSound = (SURL, SID) =>
@@ -41,14 +39,14 @@ const promiseSound = (SURL, SID) =>
     )
   );
 
-function PlaySound(URL, ID, repeat = 1) {
+function playSound(URL, ID, repeat = 1) {
 
-  let SoundDuration = undefined;
-  const DefaultDuration = 2_000;
+  let soundDuration = undefined;
+  const defaultDuration = 2_000;
 
   wasPlayingSound = true;
   promiseSound(URL, ID).then(async soundMeta => {
-    SoundDuration = soundMeta?.duration ?? DefaultDuration;
+    soundDuration = soundMeta?.duration ?? defaultDuration;
 
     let loopPlays = false, loopTm = null;
 
@@ -69,21 +67,21 @@ function PlaySound(URL, ID, repeat = 1) {
 
           wasPlayingSound = false
           setTimeout(() => DCDSoundManager.release(ID), 100) // 100ms buffer to avoid crash, and i hate it.
-        }, SoundDuration)
+        }, soundDuration)
 
       }, i * 400);
     }
 
   }).catch(err => {
-    alert('[SOUNDBANKS] ERROR!!! CHECK DEBUG LOGS')
-    console.log('[SOUNDBANKS LOG] ' + err)
+    alert("[SOUNDBANKS] ERROR!!! CHECK DEBUG LOGS")
+    console.log("[SOUNDBANKS LOG] " + err)
   })
 }
 
 function onMessage(event) {
   if (
     event.message.content && 
-    event.channelId == SelectedChannelStore.getChannelId() && 
+    event.channelId == selectedChannelStore.getChannelId() && 
     !event.message.state
   ) {
 
@@ -91,28 +89,29 @@ function onMessage(event) {
 
     if(!wasPlayingSound) {
 
-      const Filtered = SoundArray.filter(x => x?.sound_url?.match(STATIC_AUDIO_REGEX));
+      const filtered = soundArray.filter(x => x?.sound_url?.match(staticAudioRegex));
 
-      for(let data of Filtered) {
+      for(const data of filtered) {
 
         if(!data?.sound_id || !data?.sound_url) continue;
 
         if(!data?.use_regex && data?.sound_match && message.content.includes(data?.sound_match)) {
 
-          PlaySound(data?.sound_url, data?.sound_id)
+          playSound(data?.sound_url, data?.sound_id)
           break;
         }
         else if(data?.use_regex) {
           if(!data?.regex_flag || !data?.sound_regex) continue;
-          const Regex = new RegExp(data?.sound_regex, data?.regex_flag || 'gi')
-          if(Regex.test(message.content)) {
+          
+          const regex = new RegExp(data?.sound_regex, data?.regex_flag || "gi")
+          if(regex.test(message.content)) {
 
             if(data?.repeat_sound) {
-              const RepeatCount = message?.content?.match?.(Regex)?.length ?? null;
-              PlaySound(data?.sound_url, data?.sound_id, RepeatCount)
+              const repeatCount = message?.content?.match?.(regex)?.length ?? null;
+              playSound(data?.sound_url, data?.sound_id, repeatCount)
             }
             else {
-              PlaySound(data?.sound_url, data?.sound_id)
+              playSound(data?.sound_url, data?.sound_id)
             }
             break;
           }

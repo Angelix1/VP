@@ -2,30 +2,30 @@ import { storage } from "@vendetta/plugin";
 import { useProxy } from "@vendetta/storage";
 import { Forms, General } from "@vendetta/ui/components";
 import { getAssetIDByName } from "@vendetta/ui/assets";
-import { NavigationNative, React, ReactNative, constants, stylesheet, clipboard } from "@vendetta/metro/common";
-import { findByName, findByProps } from "@vendetta/metro";
-import { semanticColors, rawColors } from "@vendetta/ui";
+import { NavigationNative, React, constants, stylesheet } from "@vendetta/metro/common";
+import { findByName } from "@vendetta/metro";
+import { semanticColors } from "@vendetta/ui";
 import { showToast } from "@vendetta/ui/toasts";
 
-const { ScrollView, View, Text, TouchableOpacity, TextInput, Animated } = General;
-const { FormLabel, FormIcon, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
+const { ScrollView, View, TouchableOpacity, TextInput, Animated } = General;
+const { FormIcon, FormArrow, FormRow, FormSection, FormDivider } = Forms;
 
 // find stuff
 const useIsFocused = findByName("useIsFocused");
 const LinearGradient = findByName("LinearGradient");
 
 // Icons idk
-const Add = getAssetIDByName("ic_add_24px");
-const Checkmark = getAssetIDByName("ic_unread_checkmark");
-const Crossmark = getAssetIDByName("Small");
+const add = getAssetIDByName("ic_add_24px");
+const checkMark = getAssetIDByName("ic_unread_checkmark");
+const crossMark = getAssetIDByName("Small");
 
 // Import Page
-import Edit from './Edit';
+import Edit from "./Edit";
 
-const Styles = stylesheet.createThemedStyleSheet({
+const styles = stylesheet.createThemedStyleSheet({
     border: {
         borderRadius: 12,
-        overflow: 'hidden'
+        overflow: "hidden"
     },
     shadowTemplate: {
         shadowOffset: {
@@ -56,7 +56,7 @@ export default function Settings() {
     useIsFocused();
 
     const [newID, setNewID] = React.useState("")
-    const [animation, setAnimation] = React.useState(new Animated.Value(0));
+    const [animation] = React.useState(new Animated.Value(0));
 
     React.useEffect(() => {
         Animated.loop(
@@ -99,59 +99,59 @@ export default function Settings() {
 
     const bufferForIDs = 10_000;
 
-    const Links = [
+    const templates = [
         {
-            label: 'Vine Boom SFX',
+            label: "Vine Boom SFX",
             callback: () => {
                 storage.soundDatas.push({
                     sound_id: bufferForIDs + storage.soundDatas.length,
-                    sound_name: 'Vine Boom SFX',
-                    sound_url: 'https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/chatsounds/autoadd/memes/overused%20thud.ogg',
-                    sound_match: 'moyai',
+                    sound_name: "Vine Boom SFX",
+                    sound_url: "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/chatsounds/autoadd/memes/overused%20thud.ogg",
+                    sound_match: "moyai",
                     sound_regex: "((<a?\:)?.*?moy?ai.*?(\:>)?|🗿)",
                     regex_flag: "gi",
                     repeat_sound: false,
                     use_regex: false
                 })
-                showToast('Vine Boom Added', Checkmark)
+                showToast("Vine Boom Added", checkMark)
             }
         },
         {
-            label: 'Discordo',
+            label: "Discordo",
             callback: () => {
                 storage.soundDatas.push({
                     sound_id: bufferForIDs + storage.soundDatas.length,
-                    sound_name: 'Discordo SFX',
-                    sound_url: 'https://discord.com/assets/ae7d16bb2eea76b9b9977db0fad66658.mp3',
-                    sound_match: 'discordo',
+                    sound_name: "Discordo SFX",
+                    sound_url: "https://discord.com/assets/ae7d16bb2eea76b9b9977db0fad66658.mp3",
+                    sound_match: "discordo",
                     sound_regex: "(dc|discord(o)?)",
                     regex_flag: "gi",
                     repeat_sound: false,
                     use_regex: false
                 })
-                showToast('Discordo Added', Checkmark)
+                showToast("Discordo Added", checkMark)
             }
         }
     ]
 
     const addSound = () => {
         if( storage.soundDatas.some(o => o.sound_id == newID) )
-            return showToast('[SOUNDBANKS] Sound ID must be unique.', Crossmark)
+            return showToast("[SOUNDBANKS] Sound ID must be unique.", crossMark)
 
         if(newID) {
             
-            let NID = Number(newID);
-            if(isNaN(NID)) return showToast('[SOUNDBANKS] Sound ID must be Number.', Crossmark);
+            let cleanNewID = Number(newID);
+            if(isNaN(cleanNewID)) return showToast("[SOUNDBANKS] Sound ID must be Number.", crossMark);
 
             // Additional Check cuz im paranoid
-            if(NID < 0) return showToast('[SOUNDBANKS] Sound ID cannot be negative', Crossmark);
+            if(cleanNewID < 0) return showToast("[SOUNDBANKS] Sound ID cannot be negative", crossMark);
 
-            NID = Math.round(Math.abs(NID));
+            cleanNewID = Math.round(Math.abs(cleanNewID));
 
-            NID = NID + bufferForIDs;
+            cleanNewID = cleanNewID + bufferForIDs;
 
             storage.soundDatas.push({
-                sound_id: NID,
+                sound_id: cleanNewID,
                 sound_name: "",
                 sound_url: "",
                 sound_match: "",
@@ -164,7 +164,7 @@ export default function Settings() {
             setNewID("")
 
             navigation.push("VendettaCustomPage", {
-                title: `Adding Sound`,
+                title: "Adding Sound",
                 render: () => <Edit index={storage.soundDatas?.length - 1} />
             })
         }
@@ -175,10 +175,10 @@ export default function Settings() {
             <LinearGradient 
                 start={{x: 0.8, y: 0}}
                 end={{x: 0, y: 0.8}}
-                colors={['#b8ff34', '#4bff61', '#44f6ff', "#4dafff", '#413dff', '#d63efd']}
+                colors={["#b8ff34", "#4bff61", "#44f6ff", "#4dafff", "#413dff", "#d63efd"]}
                 style={[
-                    Styles.border,
-                    Styles.shadowTemplate,
+                    styles.border,
+                    styles.shadowTemplate,
                     { 
                         flex: 1,
                         margin: "1%",
@@ -187,18 +187,18 @@ export default function Settings() {
                 ]}
             >
                 <View style={[
-                    Styles.border,
+                    styles.border,
                     bgStyle,
                     {
-                        backgroundColor: 'rgba(10, 10, 10, 0.9)',
+                        backgroundColor: "rgba(10, 10, 10, 0.9)",
                         margin: 2,
                         padding: "3%"
                     }
                 ]}>
                     <FormSection title="Preconfigured Rules, click to use">
-                        <Animated.View style={[Styles.border, bgStyle]}>
+                        <Animated.View style={[styles.border, bgStyle]}>
                             <View style={[]}>{
-                                Links.map((codex) => {                            
+                                templates.map((codex) => {                            
                                     return <>
                                         <FormRow 
                                             label={codex?.label}
@@ -242,17 +242,17 @@ export default function Settings() {
                                         value={newID}
                                         onChangeText={setNewID}
                                         placeholder="Sound ID"
-                                        placeholderTextColor={Styles.placeholder.color}
+                                        placeholderTextColor={styles.placeholder.color}
                                         selectionColor={constants.Colors.PRIMARY_DARK_100}
                                         onSubmitEditing={addSound}
                                         returnKeyType="done"
-                                        style={[Styles.input]}
+                                        style={[styles.input]}
                                     />
                                 }
                                 trailing={
                                     <TouchableOpacity 
                                         onPress={addSound}>
-                                        <FormIcon style={{ opacity: 1 }} source={Add}/>
+                                        <FormIcon style={{ opacity: 1 }} source={add}/>
                                     </TouchableOpacity>
                                 }
                             />
@@ -263,4 +263,3 @@ export default function Settings() {
         </ScrollView>
     </>);
 }
-

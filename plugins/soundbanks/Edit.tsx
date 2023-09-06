@@ -1,14 +1,14 @@
 import { storage } from "@vendetta/plugin";
 import { useProxy } from "@vendetta/storage";
+import { findByName } from "@vendetta/metro";
 import { Forms, General } from "@vendetta/ui/components";
-import { getAssetIDByName } from "@vendetta/ui/assets";
-import { NavigationNative, constants, stylesheet, clipboard } from "@vendetta/metro/common";
-import { findByName, findByProps } from "@vendetta/metro";
+import { NavigationNative, constants, stylesheet } from "@vendetta/metro/common";
 import { semanticColors, rawColors } from "@vendetta/ui";
-import { showToast } from "@vendetta/ui/toasts";
 
-const { ScrollView, View, Text, TouchableOpacity, TextInput } = General;
-const { FormLabel, FormIcon, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
+const { ScrollView, View, Text } = General;
+const { FormLabel, FormRow, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
+
+const useIsFocused = findByName("useIsFocused");
 
 const styles = stylesheet.createThemedStyleSheet({
     basicPad: {
@@ -38,11 +38,11 @@ const styles = stylesheet.createThemedStyleSheet({
 
 
 export default function Edit({ index }) {
-	
-    let object = storage.soundDatas[index];
-	useProxy(storage);
+    
+    const object = storage.soundDatas[index];
+    useProxy(storage);
 
-	const navigation = NavigationNative.useNavigation();
+    const navigation = NavigationNative.useNavigation();
     const bufferForIDs = 10_000;
 
     // console.log(storage.soundDatas)
@@ -55,27 +55,27 @@ export default function Edit({ index }) {
                     <FormSection title="Sound ID" style={[styles.header]}>                        
 
                         <Text style={[styles.basicPad, styles.flagsText]}>{
-                            `${object.sound_id - bufferForIDs ?? 'UNKNOWN'}`
+                            `${object.sound_id - bufferForIDs ?? "UNKNOWN"}`
                         }</Text>
 
                         <FormInput
                             title="Assign a Name"
                             placeholder="Meow!"
                             value={object?.sound_name}
-                            onChange={(v: string) => object.sound_name = v}
+                            onChange={(v) => object.sound_name = v}
                         />
                         <FormInput
                             title="Sound URL"
                             placeholder="https://example.com/audio/im_cool.ogg"
                             value={object?.sound_url}
-                            onChange={(v: string) => object.sound_url = v}
+                            onChange={(v) => object.sound_url = v}
                         />
                         {!storage.soundDatas[index].use_regex && <>
                             <FormInput
                                 title="Normal Match (if included once in a message)"
                                 placeholder="cat"
                                 value={object?.sound_match}
-                                onChange={(v: string) => object.sound_match = v}
+                                onChange={(v) => object.sound_match = v}
                             />
                         </>}
                         {storage.soundDatas[index].use_regex && <>
@@ -84,7 +84,7 @@ export default function Edit({ index }) {
                                 title="Regex Syntax"
                                 placeholder="c(a)+t"
                                 value={object?.sound_regex}
-                                onChange={(v: string) => object.sound_regex = v}
+                                onChange={(v) => object.sound_regex = v}
                             />
                         </>}
                         {storage.soundDatas[index].use_regex && <>
@@ -93,7 +93,7 @@ export default function Edit({ index }) {
                                 title="Flags"
                                 placeholder="gi"
                                 value={object?.regex_flag}
-                                onChange={(v: string) => object.regex_flag = v}
+                                onChange={(v) => object.regex_flag = v}
                             />
                         </>}
                         {storage.soundDatas[index].use_regex && <>
@@ -101,7 +101,7 @@ export default function Edit({ index }) {
                             <FormSwitchRow
                                 label="Repeat sound for every match"
                                 value={storage.soundDatas[index].repeat_sound}
-                                onValueChange={(v: boolean) => storage.soundDatas[index].repeat_sound = v}
+                                onValueChange={(v) => storage.soundDatas[index].repeat_sound = v}
                             />
                         </>}
                     </FormSection>
@@ -111,7 +111,7 @@ export default function Edit({ index }) {
                             label="Regular expression"
                             subLabel="Turn on to use regular expression"
                             value={storage.soundDatas[index].use_regex}
-                            onValueChange={(v: boolean) => storage.soundDatas[index].use_regex = v}
+                            onValueChange={(v) => storage.soundDatas[index].use_regex = v}
                         />
                     </FormSection>
                 </View>
@@ -126,4 +126,4 @@ export default function Edit({ index }) {
             }/>
         </ScrollView>
     )    
-};
+}
