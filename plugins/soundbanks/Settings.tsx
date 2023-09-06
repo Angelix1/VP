@@ -195,7 +195,7 @@ export default function Settings() {
                         padding: "3%"
                     }
                 ]}>
-                    <FormSection title="Quick Urls">
+                    <FormSection title="Preconfigured Rules, click to use">
                         <Animated.View style={[Styles.border, bgStyle]}>
                             <View style={[]}>{
                                 Links.map((codex) => {                            
