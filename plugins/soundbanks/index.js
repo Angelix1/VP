@@ -1,10 +1,10 @@
-
 import Settings from "./Settings";
 
 import { storage } from "@vendetta/plugin";
-
 import { findByStoreName } from "@vendetta/metro";
-import { ReactNative, FluxDispatcher } from "@vendetta/metro/common";
+import { FluxDispatcher, ReactNative } from "@vendetta/metro/common";
+import { logger } from "@vendetta";
+
 
 const { DCDSoundManager } = ReactNative.NativeModules;
 const selectedChannelStore = findByStoreName("SelectedChannelStore");
@@ -24,6 +24,7 @@ const staticAudioRegex = /((http(s)?\:\/\/)(((?!\?).)+\.(mp3|ogg|wav)))/i;
 //     use_regex: false
 //   }
 // ]
+
 
 let wasPlayingSound = false;
 
@@ -50,9 +51,9 @@ function playSound(URL, ID, repeat = 1) {
 
     let loopPlays = false, loopTm = null;
 
-    for(let i = 0; i < repeat; i++) {
+    for (let i = 0; i < repeat; i++) {
       setTimeout(async () => {
-        if(loopPlays) {
+        if (loopPlays) {
           loopPlays = false;
           DCDSoundManager.stop(ID)
           clearTimeout(loopTm)
@@ -73,8 +74,8 @@ function playSound(URL, ID, repeat = 1) {
     }
 
   }).catch(err => {
-    alert("[SOUNDBANKS] ERROR!!! CHECK DEBUG LOGS")
-    console.log("[SOUNDBANKS LOG] " + err)
+    // alert("[SOUNDBANKS] ERROR!!! CHECK DEBUG LOGS")
+    logger.log("[SOUNDBANKS] (playSound Func): " + err)
   })
 }
 
@@ -87,26 +88,26 @@ function onMessage(event) {
 
     const message = event.message;
 
-    if(!wasPlayingSound) {
+    if (!wasPlayingSound) {
 
       const filtered = soundArray.filter(x => x?.sound_url?.match(staticAudioRegex));
 
-      for(const data of filtered) {
+      for (const data of filtered) {
 
-        if(!data?.sound_id || !data?.sound_url) continue;
+        if (!data?.sound_id || !data?.sound_url) continue;
 
-        if(!data?.use_regex && data?.sound_match && message.content.includes(data?.sound_match)) {
+        if (!data?.use_regex && data?.sound_match && message.content.includes(data?.sound_match)) {
 
           playSound(data?.sound_url, data?.sound_id)
           break;
         }
-        else if(data?.use_regex) {
-          if(!data?.regex_flag || !data?.sound_regex) continue;
+        else if (data?.use_regex) {
+          if (!data?.regex_flag || !data?.sound_regex) continue;
           
           const regex = new RegExp(data?.sound_regex, data?.regex_flag || "gi")
-          if(regex.test(message.content)) {
+          if (regex.test(message.content)) {
 
-            if(data?.repeat_sound) {
+            if (data?.repeat_sound) {
               const repeatCount = message?.content?.match?.(regex)?.length ?? null;
               playSound(data?.sound_url, data?.sound_id, repeatCount)
             }
