@@ -74,7 +74,6 @@ function playSound(URL, ID, repeat = 1) {
     }
 
   }).catch(err => {
-    // alert("[SOUNDBANKS] ERROR!!! CHECK DEBUG LOGS")
     logger.log("[SOUNDBANKS] (playSound Func): " + err)
   })
 }
