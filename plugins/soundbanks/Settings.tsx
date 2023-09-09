@@ -135,9 +135,6 @@ export default function Settings() {
     ]
 
     const addSound = () => {
-        if( storage.soundDatas.some(o => o.sound_id == newID) )
-            return showToast("[SOUNDBANKS] Sound ID must be unique.", crossMark)
-
         if(newID) {
             
             let cleanNewID = Number(newID);
@@ -149,6 +146,10 @@ export default function Settings() {
             cleanNewID = Math.round(Math.abs(cleanNewID));
 
             cleanNewID = cleanNewID + bufferForIDs;
+
+            // overlook func
+            if( storage.soundDatas.some(o => o.sound_id == cleanNewID) )
+                return showToast("[SOUNDBANKS] Sound ID must be unique.", crossMark)
 
             storage.soundDatas.push({
                 sound_id: cleanNewID,
