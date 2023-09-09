@@ -147,7 +147,7 @@ export default function Settings() {
 
             cleanNewID = cleanNewID + bufferForIDs;
 
-            // overlook func
+            // overlook checks
             if( storage.soundDatas.some(o => o.sound_id == cleanNewID) )
                 return showToast("[SOUNDBANKS] Sound ID must be unique.", crossMark)
 
