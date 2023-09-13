@@ -7,6 +7,7 @@ import { getAssetIDByName } from "@vendetta/ui/assets"
 import { storage, manifest } from "@vendetta/plugin";
 import { showToast } from "@vendetta/ui/toasts";
 import { Forms } from "@vendetta/ui/components"
+import { findInReactTree } from "@vendetta/utils"
 
 const Message = findByProps("startEditMessage")
 const MessageStore = findByProps('getMessage', 'getMessages');
@@ -333,17 +334,16 @@ const DIE = {
     }
 
     // patch for removing edited message history
-    removeEditedHistory = before("openLazy", ActionSheet, (ctx) => {
-      const [component, args, actionMessage] = ctx
-      if (args !== "MessageLongPressActionSheet") return;
-      
-      component.then(instance => {
-        const unpatch = after("default", instance, (_, component) => {
-          React.useEffect(() => () => { unpatch() }, [])
+    removeEditedHistory = before("openLazy", ActionSheet, ([component, args, actionMessage]) => {
+      const message = actionMessage?.message;
+      if (args !== "MessageLongPressActionSheet" || !message) return;
 
-          let [msgProps, buttons] = component.props?.children?.props?.children?.props?.children
-          const message = msgProps?.props?.message ?? actionMessage?.message
-          if (!buttons || !message) return;
+      component.then((instance) => {
+        const unpatch = after("default", instance, (_, comp) => {
+          React.useEffect(() => () => { unpatch() }, []);
+        
+          const buttons = findInReactTree(comp, (x) => x?.[0]?.type?.name === "ButtonRow");
+          if (!buttons) return comp;
 
           const originalMessage = MessageStore.getMessage(message.channel_id,message.id)
 
