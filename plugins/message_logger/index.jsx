@@ -135,8 +135,10 @@ const DIE = {
 
         if(
             storage?.users?.length > 0 && ( 
-              storage?.users?.some(user => user?.id == originalMessage?.author?.id) || 
-              storage?.users?.some(user => user?.username == originalMessage?.author?.username)
+              storage?.users?.some(user => (
+                (user?.id == originalMessage?.author?.id) || 
+                (user?.username == originalMessage?.author?.username)
+              ))
             )
           ) {
           return args;
@@ -183,8 +185,15 @@ const DIE = {
           return args;
         }
         
-        let checkOne = event?.message?.content == originalMessage?.content;
-        let checkTwo = event?.message?.embeds.some(emb => (emb?.url == originalMessage?.content || emb?.thumbnail?.url == originalMessage?.content) )
+        const checkOne = event?.message?.content == originalMessage?.content;
+        const checkTwo = event?.message?.embeds.some(emb => 
+          (
+            emb?.url == originalMessage?.content || 
+            emb?.thumbnail?.url == originalMessage?.content ||
+            originalMessage?.content.includes(emb?.url) || 
+            originalMessage?.content.includes(emb?.thumbnail?.url)
+          ) 
+        )
 
         // idk, Fuck you Embeded Links
         if(checkOne || checkTwo) return args;
@@ -193,8 +202,10 @@ const DIE = {
 
         if(
             storage?.users?.length > 0 && ( 
-              storage?.users?.some(user => user?.id == originalMessage?.author?.id) || 
-              storage?.users?.some(user => user?.username == originalMessage?.author?.username)
+              storage?.users?.some(user => (
+                (user?.id == originalMessage?.author?.id) || 
+                (user?.username == originalMessage?.author?.username)
+              ))
             )
           ) {
           return args;
