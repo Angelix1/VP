@@ -100,11 +100,6 @@ const DIE = {
      
       // Patch for Deleted Message    
       if (typ === "MESSAGE_DELETE") {
-        
-        const originalMessage = MessageStore.getMessage(
-          (event?.message?.channel_id || event?.channelId), 
-          (event?.message?.id || event?.id)
-        );
 
         if( deletedMessageIds[event.id] && deletedMessageIds[event.id]['modified'] == 2 ) {
           deletedMessageIds = removeKey(event.id, deletedMessageIds)
@@ -119,6 +114,11 @@ const DIE = {
         if( storage?.ignoreBots && originalMessage?.author?.bot ) {
           return args;
         }
+
+        const originalMessage = MessageStore.getMessage(
+          (event?.message?.channel_id || event?.channelId), 
+          (event?.message?.id || event?.id)
+        );
   
         // check if original message object exist
         if (
