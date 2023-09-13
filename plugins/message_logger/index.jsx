@@ -111,10 +111,6 @@ const DIE = {
           return deletedMessageIds[event.id]["arg"];
         };
 
-        if( storage?.ignoreBots && originalMessage?.author?.bot ) {
-          return args;
-        }
-
         const originalMessage = MessageStore.getMessage(
           (event?.message?.channel_id || event?.channelId), 
           (event?.message?.id || event?.id)
@@ -126,6 +122,10 @@ const DIE = {
           !originalMessage?.author?.username || 
           !originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0
         ) return args;
+
+        if( storage?.ignoreBots && originalMessage?.author?.bot ) {
+          return args;
+        }
 
         if(
             storage?.users?.length > 0 && ( 
