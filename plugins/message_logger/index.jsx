@@ -234,10 +234,10 @@ const DIE = {
     });
 
     // patch for the color
-    if (!storage['minimal']) {
-      colorText = before("updateRows", DCDChatManager, (r) => {
-        let rows = JSON.parse(r[1]);
-        
+    colorText = before("updateRows", DCDChatManager, (r) => {
+      let rows = JSON.parse(r[1]);
+      
+      if (!storage['minimal']) {
         let savedColor = storage['deletedMessageColor'] || "E40303"; // Hex
 
         // check if its valid hex
@@ -340,10 +340,10 @@ const DIE = {
             }
           }
         })
+      }
 
-        r[1] = JSON.stringify(rows);
-      });
-    }
+      r[1] = JSON.stringify(rows);
+    });
 
     // patch for removing edited message history
     removeEditedHistory = before("openLazy", ActionSheet, ([component, args, actionMessage]) => {
