@@ -97,20 +97,14 @@ const DIE = {
 
       const [event] = args;
       let typ = event.type;
-
-      const originalMessage = MessageStore.getMessage(
-        (event?.message?.channel_id || event?.channelId), 
-        (event?.message?.id || event?.id)
-      );
-      
-      if (
-        !originalMessage?.author?.id || 
-        !originalMessage?.author?.username || 
-        !originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0
-      ) return args;
-      
+     
       // Patch for Deleted Message    
       if (typ === "MESSAGE_DELETE") {
+        
+        const originalMessage = MessageStore.getMessage(
+          (event?.message?.channel_id || event?.channelId), 
+          (event?.message?.id || event?.id)
+        );
 
         if( deletedMessageIds[event.id] && deletedMessageIds[event.id]['modified'] == 2 ) {
           deletedMessageIds = removeKey(event.id, deletedMessageIds)
@@ -176,14 +170,21 @@ const DIE = {
 
       // patch for Message Edit
       if (typ === "MESSAGE_UPDATE") {
-
-        // console.log(event)
-
-        // console.log(originalMessage)
-
+        
         if(event?.removeHistory) {
           return args;
         }
+        
+        const originalMessage = MessageStore.getMessage(
+          (event?.message?.channel_id || event?.channelId), 
+          (event?.message?.id || event?.id)
+        );
+
+        if (
+          !originalMessage?.author?.id || 
+          !originalMessage?.author?.username || 
+          !originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0
+        ) return args;
         
         const checkOne = event?.message?.content == originalMessage?.content;
         const checkTwo = event?.message?.embeds.some(emb => 
