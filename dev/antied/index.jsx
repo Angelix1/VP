@@ -50,9 +50,6 @@ export default {
             before("openLazy", ActionSheet, ([component, args, actionMessage]) => {
                 const message = actionMessage?.message;
 
-                // console.log(args)
-                // console.log("====================")
-                // console.log(message)
                 if (args !== "MessageLongPressActionSheet" || !message) return;
 
                 component.then((instance) => {
@@ -60,17 +57,15 @@ export default {
                         React.useEffect(() => () => { unpatch() }, []);
 
                         const buttons = findInReactTree(comp, (x) => x?.[0]?.type?.name === "ButtonRow");
-                        // console.log(buttons)
                         if (!buttons) return comp;
 
                         
                         const originalMessage = MessageStore.getMessage(message.channel_id, message?.id)
-                        // console.log(editedMessageArray)
 
-                        if( editedMessageArray.includes(message?.id || originalMessage?.id) ) {
+                        if( editedMessageArray.includes(message?.id) || editedMessageArray.includes(originalMessage?.id) ) {
                             buttons.unshift(
                                 <FormRow
-                                label="Remove EDITED Log History"
+                                label="Remove EDITED History"
                                 leading={<FormIcon style={{ opacity: 1 }} source={getAssetIDByName("ic_edit_24px")} />}
                                 onPress={() => {
                                     let Edited = storage?.inputs?.editedMessageBuffer || "`[ EDITED ]`";
@@ -89,7 +84,7 @@ export default {
                                         removeHistory: true
                                     })
 
-                                    editedMessageArray = editedMessageArray.filter(data => data.id != message?.id)
+                                    editedMessageArray = editedMessageArray.filter(data => data != message?.id)
 
                                     ActionSheet.hideActionSheet()
                                     showToast("[Message Logger] Logs Removed", getAssetIDByName("ic_edit_24px"))

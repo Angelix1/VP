@@ -17,44 +17,10 @@ export default (editedMessageArray, deletedMessageArray) => instead("dispatch", 
 	// Message Delete Patch
 	if( type == "MESSAGE_DELETE" ) {
 
-/*
-type: {
-	0: "GUILD_TEXT"
-	1: "DM"
-	2: "GUILD_VOICE"
-	3: "GROUP_DM"
-	4: "GUILD_CATEGORY"
-	5: "GUILD_ANNOUNCEMENT"
-	10: "ANNOUNCEMENT_THREAD"
-	11: "PUBLIC_THREAD"
-	12: "PRIVATE_THREAD"
-	13: "GUILD_STAGE_VOICE"
-	14: "GUILD_DIRECTORY"
-	15: "GUILD_FORUM"
-	16: "GUILD_MEDIA"
-}
-
-client = {
-	DM: 1
-	Guild: 1,2
-}
-
-otherClient = {
-	DM: 1 
-	Guild: 2
-}
-
-*/
 		const Channel = ChannelStore.getChannel(event?.channelId?.toString?.());
 		const targetChannel = [ 1, 3 ];
 
 		function handleDeletion(callback, that, callbackArgs, deletedArray) {
-
-			if(deletedArray?.includes(event?.id)) {
-
-				deletedArray = deletedArray?.filter(item => item != event?.id);
-				return callback.apply(that, callbackArgs)
-			}
 
 			const originalMessage = MessageStore.getMessage(event?.channelId, event?.id);
 
@@ -113,6 +79,11 @@ otherClient = {
 				return originalFunc.apply(this, args)
 			}
 
+			if(deletedMessageArray?.includes(event?.id)) {
+				deletedMessageArray = deletedMessageArray?.filter(item => item != event?.id);
+				return originalFunc.apply(this, args)
+			}
+
 			return handleDeletion(originalFunc, this, args, deletedMessageArray)
 		}
 
@@ -128,16 +99,23 @@ otherClient = {
 				args[0] = {
 					type: "MESSAGE_CAT"
 				};
+				
 				// console.log("Patch SKipped and Ignored\n\n")
 				return originalFunc.apply(this, args)
 			}
+
+			if(deletedMessageArray?.includes(event?.id)) {
+				deletedMessageArray = deletedMessageArray?.filter(item => item != event?.id);
+				return originalFunc.apply(this, args)
+			}
+
 			return handleDeletion(originalFunc, this, args, deletedMessageArray)
 		}
 	}
 
 	// Message Update Patch
 	if( type == "MESSAGE_UPDATE" ) {
-		// console.log(event)
+		// console.log(editedMessageArray)
 
 		if(event?.removeHistory) return originalFunc.apply(this, args);
 
@@ -194,7 +172,9 @@ otherClient = {
 			},
 		};  
 
-		editedMessageArray.push(originalMessage?.id || event?.message?.id);
+		if(!editedMessageArray.some(IDs => (IDs == originalMessage?.id) || (IDs == event?.message?.id))) {
+			editedMessageArray.push(originalMessage?.id || event?.message?.id);			
+		}
 
 		return originalFunc.apply(this, args);
 	}
@@ -204,36 +184,3 @@ otherClient = {
 	return originalFunc.apply(this, args)
 })
 
-
-
-
-
-
-
-
-
-/*
-{ 
-	video: { 
-		width: 1280,
-		url: 'https://www.youtube.com/embed/FXiRm8KXwUE',
-		height: 720 
-	},
-	url: 'https://www.youtube.com/watch?v=FXiRm8KXwUE',
-	type: 'video',
-	title: 'I Played 50+ Racing Games Nobody Ever Played',
-	thumbnail: { 
-		width: 1280,
-		url: 'https://i.ytimg.com/vi/FXiRm8KXwUE/maxresdefault.jpg',
-		proxy_url: 'https://images-ext-1.discordapp.net/external/rzWqXwLnpcOdzuuX75S8CfQNbEoyWB4_gKbv6Z0T3kA/https/i.ytimg.com/vi/FXiRm8KXwUE/maxresdefault.jpg',
-		height: 720 
-	},
-	provider: { url: 'https://www.youtube.com', name: 'YouTube' },
-	description: 'Diving into the deepest depths of Steam. The racing game category specifically. After over 2 months of digging through garbage, is there anything worth playing? You\'ll find out in this video\n\n\n[Spoilers] Links to games: https://docs.google.com/spreadsheets/d/1MJmop3UDgZUihvHHsIvuRAmmz-X8vdM82V425y_WYF8\n\nDiscord: https://discord.gg/8BAXvEAH6h\n\n0:...',
-	color: 16711680,
-	author: { 
-		url: 'https://www.youtube.com/channel/UCcWlAZgbckzaKHFxChA8p9g',
-		name: 'Sepi (SP4)' 
-	} 
-}
-*/
