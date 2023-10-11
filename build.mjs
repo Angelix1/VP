@@ -87,3 +87,45 @@ for (let plug of await readdir("./plugins")) {
         process.exit(1);
     }
 }
+
+// Dev
+const devPath = 'dev';
+for (let plug of await readdir(`./${devPath}`)) {
+    const manifest = JSON.parse(await readFile(`./${devPath}/${plug}/manifest.json`));
+    const outPath = `./dist/dev/${plug}/index.js`;
+
+    try {
+        const bundle = await rollup({
+            input: `./${devPath}/${plug}/${manifest.main}`,
+            onwarn: () => {},
+            plugins,
+        });
+    
+        await bundle.write({
+            file: outPath,
+            globals(id) {
+                if (id.startsWith("@vendetta")) return id.substring(1).replace(/\//g, ".");
+                const map = {
+                    react: "window.React",
+                };
+
+                return map[id] || null;
+            },
+            format: "iife",
+            compact: true,
+            exports: "named",
+        });
+        await bundle.close();
+    
+        const toHash = await readFile(outPath);
+        manifest.hash = createHash("sha256").update(toHash).digest("hex");
+        manifest.main = "index.js";
+        await writeFile(`./dist/dev/${plug}/manifest.json`, JSON.stringify(manifest));
+    
+        console.log(`Successfully built ${manifest.name}!`);
+    } catch (e) {
+        console.error("Failed to build plugin...", e);
+        process.exit(1);
+    }
+}
+
