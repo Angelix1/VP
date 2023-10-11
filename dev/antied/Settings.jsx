@@ -205,7 +205,7 @@ export default () => {
 								customizeableColors?.map((obj) => {
 									const whenPressed = () => Util?.openSheet(
 										CustomColorPickerActionSheet, {
-											color: Util?.colorConverter?.toInt(obj?.defaultColor),
+											color: Util?.colorConverter?.toInt(storage.inputs[obj.id] || obj?.defaultColor || "#000"),
 											onSelect: (color) => {
 												const value = Util?.colorConverter?.toHex(color)
 												// console.log(color, value)
