@@ -1,4 +1,5 @@
 import { readFile, writeFile, readdir } from "fs/promises";
+import { existsSync } from "fs";
 import { extname } from "path";
 import { createHash } from "crypto";
 
@@ -90,7 +91,7 @@ for (let plug of await readdir("./plugins")) {
 
 // Dev
 const devPath = 'dev';
-if (fs.existsSync(`./${devPath}`)) {
+if (existsSync(`./${devPath}`)) {
 
     console.log('DEVELOPMENT')
 
