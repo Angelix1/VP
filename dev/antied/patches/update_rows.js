@@ -107,7 +107,7 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 		if(row?.type == 1) {
 			if( deletedMessagesArray?.includes(row?.message?.id) ) {
 
-				if(!minimalistic) {
+				if(!minimalistic || (storage.switches?.minimalistic == false)) {
 					const savedColor = validateHex(deletedMessageColor, "E40303"); // Hex
 					const newRow = transformObject(row?.message?.content, savedColor);
 
