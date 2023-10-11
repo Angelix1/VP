@@ -2,7 +2,7 @@
 This repo contains a plugins for [Vendetta](https://github.com/vendetta-mod/Vendetta).
 
 ## Proxied
-- 
+- [Soundbanks](https://Angelix1.github.io/VP/soundbanks) | Play Custom Sound as notification when certain rule gets triggered.
 
 ## Not Proxied
 - [Angel's Utilities](https://Angelix1.github.io/VP/angel_util) | Several QOL Patches.
