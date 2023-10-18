@@ -97,7 +97,7 @@ export default {
                                     editedMessageArray = editedMessageArray.filter(data => data != message?.id)
 
                                     ActionSheet.hideActionSheet()
-                                    showToast("[Message Logger] Logs Removed", getAssetIDByName("ic_edit_24px"))
+                                    showToast("[ANTI ED] History Removed", getAssetIDByName("ic_edit_24px"))
                                 }
                             }/>
                             )
