@@ -407,7 +407,7 @@ export default () => {
 						            	value={gutterAlpha}
 						            	onSlide={(v)=>{
 						            		setGutterAlpha(v)
-						            		console.log(v, convertAlphaToHex(v))
+						            		// console.log(v, convertAlphaToHex(v))
 						            		storage.colors.gutterColorAlpha = convertAlphaToHex(v);
 						            	}} 
 						            />
