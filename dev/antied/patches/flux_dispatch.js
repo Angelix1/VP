@@ -24,6 +24,8 @@ export default (editedMessageArray, deletedMessageArray) => instead("dispatch", 
 
 			const originalMessage = MessageStore.getMessage(event?.channelId, event?.id);
 
+			console.log(originalMessage)
+
 			const OMCheck1 = originalMessage?.author?.id;
 			const OMCheck2 = originalMessage?.author?.username;
 			const OMCheck3 = (!originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0);
@@ -50,8 +52,7 @@ export default (editedMessageArray, deletedMessageArray) => instead("dispatch", 
 					channel_id: originalMessage?.channel_id || event?.channelId,
 					guild_id: ChannelStore?.getChannel(originalMessage?.channel_id)?.guild_id,
 					timestamp: `${new Date().toJSON()}`,
-					state: "SENT",
-					dumass: 99
+					state: "SENT"
 				}, 
 				optimistic: false, 
 				sendMessageOptions: {}, 
@@ -161,12 +162,25 @@ export default (editedMessageArray, deletedMessageArray) => instead("dispatch", 
 		Edited = Edited + "\n\n";
 
 		const newMsg = event?.message || originalMessage;
+		let newMessageContent = `${originalMessage?.content}`
+
+		if(storage?.switches?.addTimestampForEdits) {
+			const now = Date.now()
+
+			const timeRelative = `<t:${Math.abs(Math.round(now / 1000))}:R>`
+
+			newMessageContent += `  (${timeRelative}) ${Edited}${event?.message?.content ?? ""}`;
+		} 
+		else {
+			newMessageContent += `  ${Edited}${event?.message?.content ?? ""}`;
+		}
+
 
 		args[0] = {
 			type: "MESSAGE_UPDATE",  
 			message: {
 				...newMsg,
-				content: `${originalMessage?.content}  ${Edited}${event?.message?.content ?? ""}`,
+				content: newMessageContent,
 				guild_id: ChannelStore.getChannel(originalMessage?.channel_id)?.guild_id,
 				edited_timestamp: "invalid_timestamp",
 			},

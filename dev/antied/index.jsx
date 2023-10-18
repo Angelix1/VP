@@ -25,12 +25,21 @@ makeDefaults(storage, {
         useBackgroundColor: false,
         ignoreBots: false,
         minimalistic: true,
+        alwaysAdd: false,
+        darkMode: true,
+        removeDismissButton: false,
+        addTimestampForEdits: false
+    },
+    colors: {
+        textColor: "#E40303",
+        backgroundColor: "#FF2C2F",
+        backgroundColorAlpha: "33",
+        gutterColor: "#FF2C2F",
+        gutterColorAlpha: "CC",
     },
     inputs: {
-        deletedMessageColor: undefined,
-        deletedMessageBackgroundColor: undefined,
-        deletedMessageBuffer: undefined,
-        editedMessageBuffer: undefined,
+        deletedMessageBuffer: "This message is deleted",
+        editedMessageBuffer: "`[ EDITED ]`",
         ignoredUserList: []
     }
 })
@@ -62,10 +71,11 @@ export default {
                         
                         const originalMessage = MessageStore.getMessage(message.channel_id, message?.id)
 
-                        if( editedMessageArray.includes(message?.id) || editedMessageArray.includes(originalMessage?.id) ) {
+                        if(storage?.switches?.alwaysAdd || editedMessageArray.includes(message?.id) || editedMessageArray.includes(originalMessage?.id) ) {
                             buttons.unshift(
                                 <FormRow
-                                label="Remove EDITED History"
+                                label="Remove Edit History"
+                                subLabel={storage?.switches?.alwaysAdd ? '(Added by alwaysAdd option)' : ''}
                                 leading={<FormIcon style={{ opacity: 1 }} source={getAssetIDByName("ic_edit_24px")} />}
                                 onPress={() => {
                                     let Edited = storage?.inputs?.editedMessageBuffer || "`[ EDITED ]`";

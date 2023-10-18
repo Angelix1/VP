@@ -19,9 +19,18 @@ export function makeDefaults(object, defaults) {
 	}
 }
 
-export function removeKey(key, obj) {
-	let { [key]: foo, ...b} = obj;
-	return b;
+export function calculateLighterValue(mainValue, increment) {
+  // Calculate the secondary value by adding the increment to the main value
+  let secondaryValue = mainValue + increment;
+
+  // Ensure the secondary value is within the valid range (0 to 255 or 00 to FF in hexadecimal)
+  secondaryValue = Math.min(secondaryValue, 255);
+
+  // Convert the values to hexadecimal format (2 digits)
+  const mainHex = mainValue.toString(16).padStart(2, '0');
+  const secondaryHex = secondaryValue.toString(16).padStart(2, '0');
+
+  return { main: mainHex, secondary: secondaryHex };
 }
 
 export function openSheet(sheet, props) {

@@ -2,17 +2,16 @@ import { ReactNative } from "@vendetta/metro/common";
 import { before } from "@vendetta/patcher";
 import { storage } from "@vendetta/plugin";
 
-
 const { DCDChatManager } = ReactNative.NativeModules;
 
 export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r) => {
 	let rows = JSON.parse(r[1]);
 
-	const { deletedMessageColor, deletedMessageBackgroundColor, deletedMessageBuffer } = storage.inputs
-	const { useBackgroundColor, minimalistic } = storage.switches
+	const { textColor, backgroundColor, backgroundColorAlpha, gutterColor, gutterColorAlpha } = storage.colors
+	const deletedText = storage.inputs?.deletedMessageBuffer
+	const { useBackgroundColor, minimalistic, removeDismissButton } = storage.switches
 
 	function validateHex(input, defaultColor) {
-		
 		if(!input) input = defaultColor;
 
 		const trimmedInput = input?.trim();
@@ -24,16 +23,16 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 			}
 		} 
 		else {
-			const hexCode = trimmedInput;
-			if (/^[0-9A-Fa-f]{6}$/.test(hexCode)) {
-				return "#" + hexCode.toUpperCase();
+			if (/^[0-9A-Fa-f]{6}$/.test(trimmedInput)) {
+				return "#" + trimmedInput.toUpperCase();
 			}
-		}
+		}																
 		
 		return defaultColor || "#000";
 	}
 
 	function transformObject(obj, inputColor) {
+		const charColor = inputColor?.toString();
 		const compTypes = [
 			"text",
 			"heading",
@@ -46,7 +45,7 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 			];
 
 		if (Array.isArray(obj)) {
-			return obj.map(transformObject);
+			return obj.map(data => transformObject(data, charColor));
 		} 
 		else if (typeof obj === "object" && obj !== null) {
 			const { content, type, target, items } = obj;
@@ -68,15 +67,15 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 						usernameOnClick: {
 							action: "0",
 							userId: "0",
-							linkColor: ReactNative.processColor(`${inputColor?.toString()}`),
+							linkColor: ReactNative.processColor(charColor),
 							messageChannelId: "0"
 						}
 					}
 				};
 			}
 
-			const updatedContent = transformObject(content);
-			const updatedItems = items ? items.map(transformObject) : undefined;
+			const updatedContent = transformObject(content, charColor);
+			const updatedItems = items ? items.map(transformObject, charColor) : undefined;
 
 			if (updatedContent !== content || updatedItems !== items || !compTypes.includes(type)) {
 				const updatedObj = { ...obj, content: updatedContent };
@@ -103,33 +102,57 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 		return obj;
 	}
 
+	function updateEphemeralIndication(object, onlyYouText, dismissText) {
+		if (object) {
+			if (onlyYouText != undefined) {
+				// Update "Only you can see this"
+				object.content[0].content[0].content = onlyYouText+"  ";
+			}
+			if (dismissText == undefined) {
+				// Update "Dismiss message"
+				object.content[0].content.splice(1)
+				//  = {
+				// 	content: dismissText,
+				// 	type: 'text'
+				// }
+			}
+		}
+		return object;
+	}
+
 	rows.forEach((row) => {
 		if(row?.type == 1) {
 			if( deletedMessagesArray?.includes(row?.message?.id) ) {
+				row.message.edited = (deletedText?.length > 0) ? deletedText : "This message is deleted";
 
-				if(!minimalistic || (storage.switches?.minimalistic == false)) {
-					const savedColor = validateHex(deletedMessageColor, "E40303"); // Hex
-					const newRow = transformObject(row?.message?.content, savedColor);
-
-					row.message.content = newRow;
+				if(minimalistic == false) {
+					const characterColor = validateHex(textColor, "#E40303")
+					const appliedColor = transformObject(row?.message?.content, characterColor)
+					row.message.content = appliedColor;
+				}
+				
+				if(removeDismissButton) {
+					row.message.ephemeralIndication = updateEphemeralIndication(
+						row.message.ephemeralIndication,
+						undefined,
+						undefined,
+					)
 				}
 
-				row.message.edited = deletedMessageBuffer || "This message is deleted";
-
-				if(useBackgroundColor && !minimalistic) {
-					const savedBGColor = validateHex(deletedMessageBackgroundColor, "FF2C2F");
-					const BGForeGround = `${ savedBGColor.toString() }33`;
-					const BGMask = `${ savedBGColor.toString() }CC`;
+				if(minimalistic == false && useBackgroundColor == true) {
+					
+					const BG = validateHex( `${backgroundColor}`, "#FF2C2F" );
+					const GC = validateHex( `${gutterColor}`, "#FF2C2F");
 
 					row.backgroundHighlight = {
-						backgroundColor: ReactNative.processColor(BGForeGround),
-						gutterColor: ReactNative.processColor(BGMask),
-					};
+						backgroundColor: ReactNative.processColor(`${BG}${backgroundColorAlpha}`),
+						gutterColor: ReactNative.processColor(`${GC}${gutterColorAlpha}`)
+					}
 				}
 			}
 		}
 	})
 
 	r[1] = JSON.stringify(rows);
-	return;
+	return r[1];
 });
