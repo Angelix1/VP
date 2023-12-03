@@ -26,7 +26,7 @@ export function openSheet(sheet, props) {
 			new Promise((call) => call({ default: sheet })),
 			"ActionSheet",
 			props
-		);
+			);
 	} 
 	catch (e) {
 		logger.error(e.stack);
@@ -38,29 +38,41 @@ export function openSheet(sheet, props) {
 
 export function calculateLighterValue(mainValue, increment) {
   // Calculate the secondary value by adding the increment to the main value
-  let secondaryValue = mainValue + increment;
+	let secondaryValue = mainValue + increment;
 
   // Ensure the secondary value is within the valid range (0 to 255 or 00 to FF in hexadecimal)
-  secondaryValue = Math.min(secondaryValue, 255);
+	secondaryValue = Math.min(secondaryValue, 255);
 
   // Convert the values to hexadecimal format (2 digits)
-  const mainHex = mainValue.toString(16).padStart(2, '0');
-  const secondaryHex = secondaryValue.toString(16).padStart(2, '0');
+	const mainHex = mainValue.toString(16).padStart(2, '0');
+	const secondaryHex = secondaryValue.toString(16).padStart(2, '0');
 
-  return { main: mainHex, secondary: secondaryHex };
+	return { main: mainHex, secondary: secondaryHex };
 }
+
+export const setOpacity = (hex, alpha) => `${hex}${Math.floor(alpha * 255).toString(16).padStart(2, 0)}`;
 
 export const colorConverter = {
 	toInt(hex) {
-    	// Remove "#" if it exists
+		// Remove "#" if it exists
 		hex = hex.replace(/^#/, '');
-    	// Parse the hexadecimal string to an integer
+		// Parse the hexadecimal string to an integer
 		return parseInt(hex, 16);
 	},
 	toHex(integer) {
 		// Convert the integer to a hexadecimal string
-    	const hex = integer.toString(16).toUpperCase();
-    	// Add "#" at the beginning
-    	return "#" + hex;
-    }
+		const hex = integer.toString(16).toUpperCase();
+		// Add "#" at the beginning
+		return "#" + hex;
+	},
+	HSLtoHEX(h, s, l) {
+		l /= 100;
+		const a = s * Math.min(l, 1 - l) / 100;
+		const f = n => {
+			const k = (n + h / 30) % 12;
+			const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+			return Math.round(255 * color).toString(16).padStart(2, '0');   // convert to Hex and prefix "0" if needed
+		};
+		return `#${f(0)}${f(8)}${f(4)}`;
+	}
 };
