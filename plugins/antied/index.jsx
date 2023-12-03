@@ -75,7 +75,7 @@ export default {
                         const buttons = findInReactTree(comp, (x) => x?.[0]?.type?.name === "ButtonRow");
                         if (!buttons) return comp;
                         
-                        const position = Math.max(buttons.findIndex((x) => x.props.message === i18n.Messages.MESSAGE_ACTION_REPLY), 0)
+                        const position = Math.max(buttons.findIndex((x) => x?.props?.message === i18n?.Messages?.MESSAGE_ACTION_REPLY), 0)
                         
                         const originalMessage = MessageStore.getMessage(message.channel_id, message?.id)
 
@@ -87,10 +87,9 @@ export default {
                         const checkIfBufferExist = separator.test(message.content);
 
                         if(checkIfBufferExist) {
-                            const buttons = findInReactTree(comp, x => x?.[0]?.type?.name === "ButtonRow")
-                            if (!buttons) return;
-
-                            buttons.splice(position, 0, (
+                            const targetPos = position || 1;
+                            
+                            buttons.splice(targetPos, 0, (
                                 <FormRow
                                     label="Remove Edit History"
                                     subLabel={storage?.switches?.alwaysAdd ? '(Added by alwaysAdd option)' : undefined}
