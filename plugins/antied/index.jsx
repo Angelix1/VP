@@ -92,7 +92,6 @@ export default {
                             buttons.splice(targetPos, 0, (
                                 <FormRow
                                     label="Remove Edit History"
-                                    subLabel={storage?.switches?.alwaysAdd ? '(Added by alwaysAdd option)' : undefined}
                                     leading={<FormIcon style={{ opacity: 1 }} source={getAssetIDByName("ic_edit_24px")} />}
                                     onPress={() => {
                                         let Edited = storage?.inputs?.editedMessageBuffer || "`[ EDITED ]`";
@@ -101,11 +100,9 @@ export default {
                                         const lats = message?.content?.split(Edited);
                                         const targetMessage = lats[lats.length - 1];
 
-                                        console.log(message.embeds)
+                                        // console.log(message.embeds)
 
-                                        const messageEmbeds = message?.embeds?.map(embedData => {
-
-                                            
+                                        const messageEmbeds = message?.embeds?.map(embedData => {                                            
                                             const rawHSLA = embedData?.color?.replace(/.+\(/, "")?.replace(/\%/g, "")?.replace(")", "")
 
                                             const split = rawHSLA?.split(', ')
@@ -133,7 +130,7 @@ export default {
                                             }
                                         })
 
-                                        console.log(messageEmbeds)
+                                        // console.log(messageEmbeds)
 
                                         FluxDispatcher.dispatch({
                                             type: "MESSAGE_UPDATE",
