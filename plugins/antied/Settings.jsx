@@ -8,13 +8,12 @@ import { storage } from "@vendetta/plugin";
 import { getAssetIDByName } from "@vendetta/ui/assets";
 import { General, Forms } from "@vendetta/ui/components";
 import { semanticColors } from "@vendetta/ui";
-
-import Slider from './ui/Slider'; // Thanks github.com/@fres621
+import { showToast } from "@vendetta/ui/toasts";
 
 const CustomColorPickerActionSheet = findByName("CustomColorPickerActionSheet");
 
 const { ScrollView, View, Text, TouchableOpacity, TextInput, Pressable, Image } = General;
-const { FormLabel, FormIcon, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput } = Forms;
+const { FormLabel, FormIcon, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput, FormSliderRow } = Forms;
 
 
 const styles = stylesheet.createThemedStyleSheet({
@@ -73,6 +72,20 @@ const Add = getAssetIDByName("ic_add_24px");
 const { getUser } = findByProps('getUser');
 const useIsFocused = findByName("useIsFocused");
 
+const togglePatch = [
+	{
+		id: "enableMD",
+		default: true,
+		label: "Toggle Message Delete",
+		subLabel: "Logs deleted message",
+	},
+	{
+		id: "enableMU",
+		default: true,
+		label: "Toggle Message Update",
+		subLabel: "Logs edited message",
+	}
+]
 
 const customizeableSwitches = [
 	{
@@ -147,6 +160,8 @@ const customizedableTexts = [
 {
     switches: {
         customizeable: false,
+        enableMU: false,
+        enableMD: false,
         useBackgroundColor: false,
         ignoreBots: false,
         minimalistic: true,
@@ -170,15 +185,11 @@ const customizedableTexts = [
 }
 */
 
-function convertAlphaToHex(percent) {
-	if (percent < 0) {
-		return '00';
-	} else if (percent > 100) {
-		return 'FF';
-	} else {
-		const hexValue = Math.round((percent / 100) * 255).toString(16);
-		return hexValue.length === 1 ? `0${hexValue}` : hexValue;
-	}
+function convertAlphaToHex(percentageValue) {
+	percentageValue = Number(percentageValue)
+	const clampedPercentage = Math.min(Math.max(percentageValue, 0), 100);
+	const hexValue = Math.round((clampedPercentage / 100) * 255).toString(16).toUpperCase();
+	return hexValue.length === 1 ? '0' + hexValue : hexValue;
 }
 
 function convertHexAlphaToPercent(hexAlpha) {
@@ -189,12 +200,33 @@ function convertHexAlphaToPercent(hexAlpha) {
   return Math.round((decimalAlpha / 255) * 100);
 }
 
+const convert = {
+	toPercentage: (decimalValue) => {
+		decimalValue = Number(decimalValue)
+		return (decimalValue === 0) ? 0 : (decimalValue === 1) ? 100 : Math.round(decimalValue * 100);
+	},
+	toDecimal: (percentageValue) => {
+		percentageValue = Number(percentageValue)
+		const clampedPercentage = Math.min(Math.max(percentageValue, 0), 100);
+		return clampedPercentage === 0 ? 0 : clampedPercentage === 100 ? 1 : clampedPercentage / 100;
+	},
+	formatDecimal: (decimalValue) => {
+		decimalValue = Number(decimalValue)
+		return (decimalValue === 0 || decimalValue === 1) ? decimalValue : decimalValue.toFixed(2);
+	}
+};
+
+
 export default () => {  
 	useProxy(storage);
 
 	// const [alpha, setAlpha] = React.useState(255);
-	const [BGAlpha, setBGAlpha] = React.useState(convertHexAlphaToPercent(storage?.colors?.backgroundColorAlpha) ?? 100);
-	const [gutterAlpha, setGutterAlpha] = React.useState(convertHexAlphaToPercent(storage?.colors?.gutterColorAlpha) ?? 100);
+	const [BGAlpha, setBGAlpha] = React.useState(
+		convert.toDecimal( convertHexAlphaToPercent(storage?.colors?.backgroundColorAlpha) ?? 100 )
+	);
+	const [gutterAlpha, setGutterAlpha] = React.useState(
+		convert.toDecimal( convertHexAlphaToPercent(storage?.colors?.gutterColorAlpha) ?? 100 )
+	);
 	
 	const navigation = NavigationNative.useNavigation();
 	useIsFocused();
@@ -212,6 +244,7 @@ export default () => {
 			<View style={{ marginTop: 20, marginBottom: 20 }}>
 
 				<FormSection title="Plugin Setting" style={[styles.header]}>
+				
 					<FormRow 
 						label='Customization'
 						subLabel='Show customization for the plugin'
@@ -223,7 +256,42 @@ export default () => {
 							/>
 						}
 					/>
+					
+					{/* Divider */}
+					{
+						storage?.switches?.customizeable && (<>
+							<FormSection title="Patches" />
+							<FormDivider />
+						</>)
+					}				
 
+					{/* Switches */}
+					{
+						storage?.switches?.customizeable && (<>
+							<View style={[styles.subText]}>{
+								togglePatch?.map((obj, index) => {
+									return (<>
+										<FormRow 
+											label={obj?.label}
+											subLabel={obj?.subLabel}
+											leading={obj?.icon && <FormIcon style={{ opacity: 1 }} source={getAssetIDByName(obj?.icon)} />}
+											trailing={
+												("id" in obj) ? (
+													<FormSwitch
+													value={storage?.switches[obj?.id] ?? obj?.default}
+													onValueChange={ (value) => (storage.switches[obj?.id] = value) }
+													/>
+												) : undefined
+											}
+										/>
+										{index !== togglePatch?.length - 1 && <FormDivider />}
+									</>)
+								})
+							}				
+							</View>
+						</>)
+					}
+					
 					{/* Divider */}
 					{
 						storage?.switches?.customizeable && (<>
@@ -359,13 +427,13 @@ export default () => {
 										<View style={
 											{ 
 												width: "2%",
-												backgroundColor: `${storage.colors.gutterColor}${convertAlphaToHex(gutterAlpha)}`,
+												backgroundColor: `${storage.colors.gutterColor}${convertAlphaToHex(convert.toPercentage(gutterAlpha))}`,
 											}
 										}/>
 										<View style={
 											{ 
 												flex: 1,										
-												backgroundColor: `${storage.colors.backgroundColor}${convertAlphaToHex(BGAlpha)}`,
+												backgroundColor: `${storage.colors.backgroundColor}${convertAlphaToHex(convert.toPercentage(BGAlpha))}`,
 												justifyContent: 'center', 
 												alignItems: 'center',
 											}
@@ -381,30 +449,30 @@ export default () => {
 												}
 											}> Low Effort Deleted Example Message </Text>									
 										</View>
-									</View>	
-
-						            <FormDivider />
-									<FormRow label={`Background Color Alpha: ${BGAlpha}%`}/>
-									<Slider 
-						            	style={{marginBottom: 0, marginRight: 10}}
-						            	value={BGAlpha}
-						            	onSlide={(v)=>{
-						            		setBGAlpha(v)
-						            		storage.colors.backgroundColorAlpha = convertAlphaToHex(v);
-						            	}} 
-						            />
-
-						            <FormDivider />
-						            <FormRow label={`Background Gutter Alpha: ${gutterAlpha}%`}/>	
-									<Slider 
-						            	style={{marginBottom: 0, marginRight: 10}}
-						            	value={gutterAlpha}
-						            	onSlide={(v)=>{
-						            		setGutterAlpha(v)
-						            		// console.log(v, convertAlphaToHex(v))
-						            		storage.colors.gutterColorAlpha = convertAlphaToHex(v);
-						            	}} 
-						            />
+									</View>
+									
+									<FormSliderRow
+										label={`Background Color Alpha: ${convert.toPercentage(BGAlpha)}%`}
+										value={BGAlpha}
+										style={{ width: "90%" }}
+										onValueChange={(v) => {
+						            		setBGAlpha(Number(convert.formatDecimal(v)))
+						            		storage.colors.backgroundColorAlpha = convertAlphaToHex(convert.toPercentage(v));
+										}}
+									/>
+									
+									<FormDivider/>
+									
+									<FormSliderRow
+										label={`Background Gutter Alpha: ${convert.toPercentage(gutterAlpha)}%`}
+										value={gutterAlpha}
+										style={{ width: "90%" }}
+										onValueChange={(v) => {
+						            		setGutterAlpha(Number(convert.formatDecimal(v)))
+						            		storage.colors.gutterColorAlpha = convertAlphaToHex(convert.toPercentage(v));
+										}}
+									/>
+								
 						        </View>
 							</View>
 						</>)

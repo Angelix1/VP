@@ -8,6 +8,8 @@ import createMessageRecord from "./patches/createMessageRecord";
 import messageRecordDefault from "./patches/messageRecordDefault";
 import updateMessageRecord from "./patches/updateMessageRecord";
 
+import sillyPatch from "./stoel/patch";
+
 import { before, after } from "@vendetta/patcher";
 import { getAssetIDByName } from "@vendetta/ui/assets";
 import { findInReactTree } from "@vendetta/utils";
@@ -26,6 +28,8 @@ const { FormRow, FormIcon } = Forms
 makeDefaults(storage, {
     switches: {
         customizeable: false,
+    	enableMD: true,
+    	enableMU: true,
         useBackgroundColor: false,
         ignoreBots: false,
         minimalistic: true,
@@ -55,9 +59,10 @@ let deletedMessageArray = {};
 
 export default {
     onLoad: () => {
-        patches.push(
-            fluxDispatchPatch(deletedMessageArray),
-            updateRowsPatch(deletedMessageArray),
+    	patches.push(
+    		sillyPatch(),
+        	fluxDispatchPatch(deletedMessageArray),
+        	updateRowsPatch(deletedMessageArray),
             selfEditPatch(),
             createMessageRecord(),
             messageRecordDefault(),
