@@ -49,6 +49,7 @@ makeDefaults(storage, {
     inputs: {
         deletedMessageBuffer: "This message is deleted",
         editedMessageBuffer: "`[ EDITED ]`",
+        historyToast: "History Removed",
         ignoredUserList: []
     }
 })
@@ -151,7 +152,9 @@ export default {
                                         })
 
                                         ActionSheet.hideActionSheet()
-                                        showToast("[ANTI ED] History Removed", getAssetIDByName("ic_edit_24px"))
+                                        if(storage?.inputs?.historyToast?.length > 0 || storage?.inputs?.historyToast != "") {
+                                        	showToast(`[ANTI ED] ${storage?.inputs?.historyToast}`, getAssetIDByName("ic_edit_24px"))
+                                        }
                                     }
                                 }/>
                             ))
@@ -181,177 +184,3 @@ export default {
     },
     settings: Settings
 }
-
-/*
-{
-    type: 'MESSAGE_UPDATE',
-    guildId: '871446026228215849',
-    message: {
-        id: message.id,
-        type: message
-    }
-
-}
-
-
-{ 
-    type: 'MESSAGE_UPDATE',
-    guildId: '871446026228215849',
-    message: { 
-        id: '1180921297971187723',
-        type: 0,
-        tts: false,
-        timestamp: '2023-12-03T17:19:37.893000+00:00',
-        pinned: false,
-        mentions: [],
-        mention_roles: [],
-        mention_everyone: false,
-        member: { 
-            roles: [ '871804391831769129', '926362271951769620' ],
-            premium_since: null,
-            pending: false,
-            nick: 'iririr',
-            mute: false,
-            joined_at: '2021-09-13T09:47:09.254000+00:00',
-            flags: 0,
-            deaf: false,
-            communication_disabled_until: '2022-04-03T00:13:31.070000+00:00',
-            avatar: null 
-        },
-        flags: 0,
-        embeds: [],
-        edited_timestamp: '2023-12-03T17:29:37.897193+00:00',
-        content: 'cat https://youtu.be/',
-        components: [],
-        channel_id: '1180891225969131560',
-        author: { 
-            username: 'alexesix',
-            public_flags: 0,
-            premium_type: 0,
-            id: '791682875224490014',
-            global_name: 'AlexEsix',
-            discriminator: '0',
-            avatar_decoration_data: null,
-            avatar: '737f2ea62f64ee27e01402741630cc4e' 
-        },
-        attachments: [],
-        guild_id: '871446026228215849'
-    } 
-}
-
-{ 
-    type: 'MESSAGE_UPDATE',
-    guildId: '871446026228215849',
-    message: { 
-        id: '1180921297971187723',
-        embeds: [{ 
-            url: 'https://youtu.be/',
-            type: 'link',
-            title: 'YouTube',
-            thumbnail: { 
-                width: 1200,
-                url: 'https://www.youtube.com/img/desktop/yt_1200.png',
-                proxy_url: 'https://images-ext-1.discordapp.net/external/Y9ec_ju_jMFXEYbE-Ie5kPp5R5im0556dCBV7EPvn8M/https/www.youtube.com/img/desktop/yt_1200.png',
-                height: 1200 
-            },
-            description: 'Enjoy the videos and music you love, upload original content, and share it all with friends, family, and the world on YouTube.', 
-            content_scan_version: 1 
-        }],
-        channel_id: '1180891225969131560',
-        guild_id: '871446026228215849' 
-    } 
-}
-
-{ 
-    id: '1180921297971187723',
-    type: 0,
-    channel_id: '1180891225969131560',
-    author: { 
-        hasFlag: [Function: value],
-        isStaff: [Function: value],
-        isStaffPersonal: [Function: value],
-        hasAnyStaffLevel: [Function: value],
-        id: '791682875224490014',
-        username: 'alexesix',
-        discriminator: '0',
-        avatar: '737f2ea62f64ee27e01402741630cc4e',
-        avatarDecorationData: null,
-        email: 'randirachmadperdana@gmail.com',
-        verified: true,
-        bot: false,
-        system: false,
-        mfaEnabled: false,
-        mobile: true,
-        desktop: false,
-        premiumType: null,
-        flags: 32,
-        publicFlags: 0,
-        purchasedFlags: 0,
-        premiumUsageFlags: 0,
-        phone: null,
-        nsfwAllowed: true,
-        guildMemberAvatars: {},
-        hasBouncedEmail: false,
-        personalConnectionId: null,
-        globalName: 'AlexEsix' 
-    },
-    content: 'cat https://youtu.be  `[ EDITED ]`\n\ncat https://youtu.be/',
-    customRenderedContent: undefined,
-    attachments: [],
-    embeds: [{ 
-        id: 'embed_88',
-        url: 'https://youtu.be/',
-        type: 'link',
-        rawTitle: 'YouTube',
-        rawDescription: 'Enjoy the videos and music you love, upload original content, and share it all with friends, family, and the world on YouTube.',
-        referenceId: undefined,
-        flags: undefined,
-        thumbnail: { 
-            url: 'https://www.youtube.com/img/desktop/yt_1200.png',
-            proxyURL: 'https://images-ext-1.discordapp.net/external/Y9ec_ju_jMFXEYbE-Ie5kPp5R5im0556dCBV7EPvn8M/https/www.youtube.com/img/desktop/yt_1200.png',
-            width: 1200,
-            height: 1200 
-        },
-        fields: [] 
-    }],
-    mentions: [],
-    mentionRoles: [],
-    mentionChannels: [],
-    mentioned: false,
-    pinned: false,
-    mentionEveryone: false,
-    tts: false,
-    codedLinks: [],
-    giftCodes: [],
-    timestamp: {},
-    editedTimestamp: 
-    state: 
-    nonce: 
-    blocked: 
-    call: 
-    bot: 
-    webhookId: 
-    reactions: 
-    applicationId: 
-    application: 
-    activity: 
-    messageReference: 
-    flags: 
-    isSearchHit: 
-    stickers: 
-    stickerItems: 
-    components: 
-    loggingName: 
-    colorString: 
-    nick: 
-    interaction: 
-    interactionData: 
-    interactionError: 
-    roleSubscriptionData: 
-    poll: 
-    referralTrialOfferId: 
-}
-
-
-
-*/

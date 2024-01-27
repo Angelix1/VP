@@ -153,37 +153,15 @@ const customizedableTexts = [
 		title: "Customize Edited Separator",
 		type: "default",
 		placeholder: "`[ EDITED ]`",
+	},
+	{
+		id: "historyToast",
+		title: "Customize Remove History Toast Message",
+		type: "default",
+		placeholder: "History Removed",
 	}
 ]
 
-/* settings IDs and Vars
-{
-    switches: {
-        customizeable: false,
-        enableMU: false,
-        enableMD: false,
-        useBackgroundColor: false,
-        ignoreBots: false,
-        minimalistic: true,
-        alwaysAdd: false,
-        darkMode: true,
-        removeDismissButton: false,
-        addTimestampForEdits: false
-    },
-    colors: {
-        textColor: "#E40303",
-        backgroundColor: "#FF2C2F",
-        backgroundColorAlpha: "33",
-        gutterColor: "#FF2C2F",
-        gutterColorAlpha: "CC",
-    },
-    inputs: {
-        deletedMessageBuffer: "This message is deleted",
-        editedMessageBuffer: "`[ EDITED ]`",
-        ignoredUserList: []
-    }
-}
-*/
 
 function convertAlphaToHex(percentageValue) {
 	percentageValue = Number(percentageValue)
