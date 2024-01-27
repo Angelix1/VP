@@ -151,7 +151,9 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 	rows.forEach((row) => {
 		if(row?.type == 1) {
 			if( deletedMessagesArray[row?.message?.id] ) {
-				row.message.edited = (deletedText?.length > 0) ? deletedText : "This message is deleted";
+				if(deletedText?.length > 0 || deletedText != "") {
+				       row.message.edited = deletedText;
+				}
 				
 				if(minimalistic == false) {
 					const characterColor = validateHex(textColor, "#E40303")
