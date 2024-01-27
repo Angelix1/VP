@@ -9,6 +9,7 @@ import { storage } from "@vendetta/plugin";
 const ActionSheet = findByProps("openLazy", "hideActionSheet")
 const ChannelStore = findByProps("getChannel", "getDMFromUserId");
 const ChannelMessages = findByProps("_channelMessages");
+const MessageStore = findByProps('getMessage', 'getMessages');
 
 export default (deletedMessageArray) => before("dispatch", FluxDispatcher, (args) => {
 	const [event] = args;
@@ -16,6 +17,7 @@ export default (deletedMessageArray) => before("dispatch", FluxDispatcher, (args
 
 	// Message Delete Patch
 	if( type == "MESSAGE_DELETE" ) {
+		if(storage.switches.enableMD == false) return args;
 
 		if(event?.otherPluginBypass) return args;
 
@@ -77,40 +79,32 @@ export default (deletedMessageArray) => before("dispatch", FluxDispatcher, (args
 
 	// Message Update Patch
 	if( type == "MESSAGE_UPDATE" ) {
-
+		if(storage.switches.enableMU == false) return args;
+		
 		if(event?.otherPluginBypass) return args;
 
 		if(event?.message?.author?.bot) return args;
 
-		const channel = ChannelMessages.get(event?.message?.channel_id);
-		const originalMessage = channel?.get(event?.message?.id);
-
+		const originalMessage = MessageStore.getMessage(
+          (event?.message?.channel_id || event?.channelId), 
+          (event?.message?.id || event?.id)
+        );
+         
 		const OMCheck1 = originalMessage?.author?.id;
 		const OMCheck2 = originalMessage?.author?.username;
 		const OMCheck3 = (!originalMessage?.content && originalMessage?.attachments?.length == 0 && originalMessage?.embeds?.length == 0);
 		
 		if(!originalMessage || !OMCheck1 || !OMCheck2 || OMCheck3) return args;
-
-		const EmbedCheck1 = event?.message?.content == originalMessage?.content;
-		const EmbedCheck2 = event?.message?.embeds.some(emb => 
-        	(
-            	emb?.url == originalMessage?.content || 
-            	emb?.thumbnail?.url == originalMessage?.content ||
-            	originalMessage?.content.includes(emb?.url) || 
-            	originalMessage?.content.includes(emb?.thumbnail?.url)
-         	)
-        )
-
-        const EmbedCheck3 = event?.message?.embeds?.size || event?.message?.embeds?.length;
-        const EmbedCheck4 = originalMessage?.embeds?.size || originalMessage?.embeds?.length
-
-		if(EmbedCheck1 || EmbedCheck2 || (!event?.message?.content && (EmbedCheck3 != EmbedCheck4)) ) 
-			return args;
+		
+		if(
+			(!event?.message?.content || !originalMessage?.content) ||
+			(event?.message?.content == originalMessage?.content) 
+		) return args;
 
 		if(
 			(storage?.inputs?.ignoredUserList?.length > 0) &&
-			storage.inputs.ignoredUserList?.some(user => 
-				(user?.id == originalMessage?.author?.id) || (user.username == originalMessage.author.username) 
+			storage?.inputs?.ignoredUserList?.some(user => 
+				(user?.id == originalMessage?.author?.id) || (user?.username == originalMessage?.author?.username) 
 			)
 		) return args;
 
@@ -132,18 +126,18 @@ export default (deletedMessageArray) => before("dispatch", FluxDispatcher, (args
 			newMessageContent += `  ${Edited}${event?.message?.content ?? ""}`;
 		}
 
-
 		args[0] = {
 			type: "MESSAGE_UPDATE",  
 			message: {
 				...newMsg,
 				content: newMessageContent,
-				guild_id: ChannelStore.getChannel(originalMessage?.channel_id)?.guild_id,
+				guild_id: ChannelStore.getChannel(event?.channelId || event?.message?.channel_id || originalMessage?.channel_id)?.guild_id,
 				edited_timestamp: "invalid_timestamp",
 			},
 		};
 
 		return args;
 	}
+	return args;
 })
 

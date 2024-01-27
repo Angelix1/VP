@@ -26,7 +26,7 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 			if (/^[0-9A-Fa-f]{6}$/.test(trimmedInput)) {
 				return "#" + trimmedInput.toUpperCase();
 			}
-		}																
+		}
 		
 		return defaultColor || "#000";
 	}
@@ -134,13 +134,25 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 			}
 		}
 	}
+	
+	function removeProxy(link) {
+   		const proxyIndex = link.indexOf("/https/");
+	    
+    	if (proxyIndex !== -1) {
+        	const modifiedLink = "https://" + link.substring(proxyIndex + "/https/".length);
+        	return modifiedLink;
+    	} 
+    	else {
+        // If no proxy found, return the original link
+        	return link;
+    	}
+	}
 
 	rows.forEach((row) => {
 		if(row?.type == 1) {
-			
 			if( deletedMessagesArray[row?.message?.id] ) {
 				row.message.edited = (deletedText?.length > 0) ? deletedText : "This message is deleted";
-
+				
 				if(minimalistic == false) {
 					const characterColor = validateHex(textColor, "#E40303")
 					const appliedColor = transformObject(row?.message?.content, characterColor)
@@ -159,7 +171,9 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 					
 					const BG = validateHex( `${backgroundColor}`, "#FF2C2F" );
 					const GC = validateHex( `${gutterColor}`, "#FF2C2F");
-
+					
+					row.backgroundHighlight ??= {};
+					
 					row.backgroundHighlight = {
 						backgroundColor: ReactNative.processColor(`${BG}${backgroundColorAlpha}`),
 						gutterColor: ReactNative.processColor(`${GC}${gutterColorAlpha}`)
@@ -172,48 +186,3 @@ export default (deletedMessagesArray) => before("updateRows", DCDChatManager, (r
 	r[1] = JSON.stringify(rows);
 	return r[1];
 });
-
-
-
-
-/*
-embeds: [ 
-	{ 
-		id: 'embed_7',
-		type: 'rich',
-		spoiler: '',
-		obscure: '',
-		obscureAwaitingScan: '',
-		author: { 
-			name: 'alexesix',
-			iconURL: 'https://images-ext-1.discordapp.net/external/SxauDtdjXLg1IJw-f6TLJkXVq_-V1OhCCsC0-KpalLE/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/791682875224490014/737f2ea62f64ee27e01402741630cc4e.png',
-			iconProxyURL: 'https://images-ext-1.discordapp.net/external/SxauDtdjXLg1IJw-f6TLJkXVq_-V1OhCCsC0-KpalLE/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/791682875224490014/737f2ea62f64ee27e01402741630cc4e.png' 
-		},
-		rawTitle: 'Server Avatar',
-		title: [
-			{ 
-				content: 'Server Avatar', 
-				type: 'text'
-			}
-		],
-		image: { 
-			url: 'https://images-ext-1.discordapp.net/external/SxauDtdjXLg1IJw-f6TLJkXVq_-V1OhCCsC0-KpalLE/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/791682875224490014/737f2ea62f64ee27e01402741630cc4e.png',
-			proxyURL: 'https://images-ext-1.discordapp.net/external/SxauDtdjXLg1IJw-f6TLJkXVq_-V1OhCCsC0-KpalLE/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/791682875224490014/737f2ea62f64ee27e01402741630cc4e.png',
-			width: 208,
-			height: 208 
-		},
-		fields: [],
-		borderLeftColor: 452984831,
-		providerColor: -3880498,
-		headerTextColor: -4867391,
-		bodyTextColor: -2367775,
-		backgroundColor: 452984831
-	}
-],
-
-https://images-ext-1.discordapp.net/external/SxauDtdjXLg1IJw-f6TLJkXVq_-V1OhCCsC0-KpalLE/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/791682875224490014/737f2ea62f64ee27e01402741630cc4e.png
-https://images-ext-1.discordapp.net/external/SxauDtdjXLg1IJw-f6TLJkXVq_-V1OhCCsC0-KpalLE/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/791682875224490014/737f2ea62f64ee27e01402741630cc4e.png
-https://images-ext-1.discordapp.net/external/SxauDtdjXLg1IJw-f6TLJkXVq_-V1OhCCsC0-KpalLE/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/791682875224490014/737f2ea62f64ee27e01402741630cc4e.png
-https://images-ext-1.discordapp.net/external/SxauDtdjXLg1IJw-f6TLJkXVq_-V1OhCCsC0-KpalLE/%3Fsize%3D4096/https/cdn.discordapp.com/avatars/791682875224490014/737f2ea62f64ee27e01402741630cc4e.png
-
-*/
