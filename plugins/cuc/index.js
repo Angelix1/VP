@@ -79,8 +79,8 @@ export default {
 			
 					if (
 						!typingThing || 
-						!typingThing.children || 
-						typingThing.children?.toLowerCase() === "several people are typing..."
+						!typingThing?.children || 
+						typingThing?.children?.toLowerCase?.() === "several people are typing..."
 					) return;
 					
 					const users = TypingWrapper.useTypingUserIds(channel.id).map(user => {
