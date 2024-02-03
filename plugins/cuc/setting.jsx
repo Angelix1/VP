@@ -28,8 +28,14 @@ function createSwitch(id, label, sub, def, icon) {
 const switches = [
 	createSwitch("enableUsername", "Toggle for username", null, true, null),
 	createSwitch("enableReply", "Toggle for replied messages", null, false, null),
-	createSwitch("enableType", "Toggle for typing indicator", null, false, null)
-	
+	createSwitch("enableType", "Toggle for typing indicator", null, false, null),
+	createSwitch(
+		"enableToMyself", 
+		"Apply color only to myself", 
+		"Only Modify your own username color instead all members.",
+		false, 
+		null
+	)
 ]
 
 export default () => {

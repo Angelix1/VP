@@ -29,6 +29,7 @@ makeDefaults(storage, {
 		enableUsername: true,
 		enableReply: false,
 		enableType: false,
+		enableToMyself: false,
 	},
 })
 
@@ -48,20 +49,32 @@ export default {
 				for (const row of rows) {
 					const { message } = row
 					if(!message) continue;
+					// console.log(message)
 					
 					const handleColor = (m) => { 
 						return m.usernameColor = resolveColor(storage) 
 					};
-					
-					if(storage?.switches?.enableUsername) {
-						handleColor(message)
+
+					function handleModification() {
+						if(storage?.switches?.enableUsername) {
+							handleColor(message)
+						}						
+						if(
+							message?.referencedMessage?.message && 
+							storage?.switches?.enableReply
+						) {
+							handleColor(message?.referencedMessage?.message)
+						}						
 					}
 					
 					if(
-						message?.referencedMessage?.message && 
-						storage?.switches?.enableReply
+						storage?.switches?.enableToMyself && 
+						(UserStore?.getCurrentUser?.()?.id == message?.authorId)
 					) {
-						handleColor(message?.referencedMessage?.message)
+						handleModification()
+					} 
+					else if (!storage?.switches?.enableToMyself) {
+						handleModification()
 					}
 				}
 				args[1] = JSON.stringify(rows);
