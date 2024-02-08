@@ -354,7 +354,7 @@ export default () => {
 					                    <FormInput
 					                    	title={obj?.title}
 					                    	keyboardType={obj?.type}
-					                    	placeholder={obj?.placeholder}
+					                    	placeholder={obj?.placeholder?.toString()}
 					                    	value={storage?.inputs[obj.id] ?? obj?.placeholder}
 					                    	onChange={(val) => (storage.inputs[obj.id] = val.toString())}
 					                    />
