@@ -169,6 +169,12 @@ const customizedableTexts = [
 		placeholder: "History Removed",
 	},
 	{
+		id: "logLength",
+		title: "Customize Log message length",
+		type: "numeric",
+		placeholder: "60",
+	},
+	{
 		id: "logCount",
 		title: "Customize Log Limit",
 		type: "number",
