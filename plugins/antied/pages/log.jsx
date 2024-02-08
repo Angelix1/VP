@@ -144,7 +144,7 @@ export default () => {
 	
 	
 
-	if((log?.length > storage?.logCount) && storage.logWarning) {
+	if((log?.length > storage?.inputs?.logCount) && storage.logWarning) {
 		dialog.show({
 			title: "Log exceed limit",
 			body: "Clear log?",
@@ -158,6 +158,8 @@ export default () => {
 			}
 		})
 	}
+
+	const snipLength = Number(storage?.inputs?.logLength || 60);
 
 	return (<>
 		<ScrollView>
@@ -263,14 +265,14 @@ export default () => {
 										{
 											(edited?.length > 0) ? (<>
 												<Text style={[styles.main_text, styles.old_message]}>
-													{shortenString(content, storage?.inputs?.logLength)}
+													{shortenString(content, snipLength)}
 												</Text>
 												<Text style={[styles.main_text, styles.message_content]}>
-													{shortenString(edited, storage?.inputs?.logLength)}
+													{shortenString(edited, snipLength)}
 												</Text>
 											</>) : 
 											(<Text style={styles.message_content}>
-												{shortenString(content, storage?.inputs?.logLength)}
+												{shortenString(content, snipLength)}
 												</Text>
 											)
 										}
