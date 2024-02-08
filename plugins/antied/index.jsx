@@ -50,6 +50,7 @@ makeDefaults(storage, {
         deletedMessageBuffer: "This message is deleted",
         editedMessageBuffer: "`[ EDITED ]`",
         historyToast: "History Removed",
+        logLength: 60,
         ignoredUserList: []
     },
     log: [],
