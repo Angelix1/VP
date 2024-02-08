@@ -263,14 +263,14 @@ export default () => {
 										{
 											(edited?.length > 0) ? (<>
 												<Text style={[styles.main_text, styles.old_message]}>
-													{shortenString(content, 20)}
+													{shortenString(content, storage?.inputs?.logLength)}
 												</Text>
 												<Text style={[styles.main_text, styles.message_content]}>
-													{shortenString(edited, 20)}
+													{shortenString(edited, storage?.inputs?.logLength)}
 												</Text>
 											</>) : 
 											(<Text style={styles.message_content}>
-												{shortenString(content, 20)}
+												{shortenString(content, storage?.inputs?.logLength)}
 												</Text>
 											)
 										}
