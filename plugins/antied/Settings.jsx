@@ -177,7 +177,7 @@ const customizedableTexts = [
 	{
 		id: "logCount",
 		title: "Customize Log Limit",
-		type: "number",
+		type: "numeric",
 		placeholder: "1000",
 	}
 ]
