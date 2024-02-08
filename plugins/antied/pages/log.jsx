@@ -9,8 +9,6 @@ import { useProxy } from "@vendetta/storage";
 import { storage } from "@vendetta/plugin";
 import { getAssetIDByName } from "@vendetta/ui/assets";
 
-import { RedesignRow } from "@nexpid/vdp-shared";
-
 const dialog = findByProps("show", "confirm", "close");
 const Search = findByName("StaticSearchBarContainer");
 const UserStore = findByStoreName("UserStore");
