@@ -1,6 +1,8 @@
 import { makeDefaults, colorConverter, setOpacity } from "./util";
 import Settings from "./Settings";
 
+import { RedesignRow } from "@nexpid/vdp-shared";
+
 import fluxDispatchPatch from "./patches/flux_dispatch";
 import selfEditPatch from "./patches/self_edit";
 import updateRowsPatch from "./patches/update_rows";
@@ -51,7 +53,10 @@ makeDefaults(storage, {
         editedMessageBuffer: "`[ EDITED ]`",
         historyToast: "History Removed",
         ignoredUserList: []
-    }
+    },
+    log: [],
+    logCount: 1000,
+    logWarning: false,
 })
 
 let patches = [];
@@ -96,9 +101,9 @@ export default {
                             const targetPos = position || 1;
                             
                             buttons.splice(targetPos, 0, (
-                                <FormRow
+                                <RedesignRow
                                     label="Remove Edit History"
-                                    leading={<FormIcon style={{ opacity: 1 }} source={getAssetIDByName("ic_edit_24px")} />}
+                                    icon={getAssetIDByName("ic_edit_24px")}
                                     onPress={() => {
                                         let Edited = storage?.inputs?.editedMessageBuffer || "`[ EDITED ]`";
                                         Edited = Edited + "\n\n";                                    

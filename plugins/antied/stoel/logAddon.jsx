@@ -1,9 +1,8 @@
-// from cloud-sync
 import { NavigationNative } from "@vendetta/metro/common";
 import { getAssetIDByName } from "@vendetta/ui/assets";
 import { ErrorBoundary, Forms } from "@vendetta/ui/components";
 
-import Settings from "../Settings";
+import log from "../pages/log";
 
 const { FormRow } = Forms;
 
@@ -14,13 +13,13 @@ export default () => {
   return (
     <ErrorBoundary>
       <FormRow
-        label="Antied"
+        label="Anti Edit & Delete Logs"
         leading={<FormRow.Icon source={getAssetIDByName("ic_edit_24px")} />}
         trailing={FormRow.Arrow}
         onPress={() =>
           navigation.push("VendettaCustomPage", {
-            title: "Anti Edit & Delete Setting",
-            render: Settings,
+            title: "Anti Edit & Delete Logs",
+            render: log,
           })
         }
       />

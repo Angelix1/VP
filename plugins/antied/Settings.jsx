@@ -1,4 +1,6 @@
 import ListUsers from './pages/listUsers';
+import LogPage from "./pages/log";
+
 import * as Util from "./util";
 
 import { NavigationNative, constants, React, ReactNative, stylesheet } from "@vendetta/metro/common";
@@ -84,6 +86,12 @@ const togglePatch = [
 		default: true,
 		label: "Toggle Message Update",
 		subLabel: "Logs edited message",
+	},
+	{
+		id: "logWarning",
+		default: false,
+		label: "Toggle Exceeding Log Limit Warning",
+		subLabel: "Warn if log limit exceed",
 	}
 ]
 
@@ -159,6 +167,12 @@ const customizedableTexts = [
 		title: "Customize Remove History Toast Message",
 		type: "default",
 		placeholder: "History Removed",
+	},
+	{
+		id: "logCount",
+		title: "Customize Log Limit",
+		type: "number",
+		placeholder: "1000",
 	}
 ]
 
@@ -222,6 +236,17 @@ export default () => {
 			<View style={{ marginTop: 20, marginBottom: 20 }}>
 
 				<FormSection title="Plugin Setting" style={[styles.header]}>
+					<FormRow
+		        label="Antied Logging Page"
+		        leading={<FormRow.Icon source={getAssetIDByName("ic_edit_24px")} />}
+		        trailing={FormRow.Arrow}
+		        onPress={() =>
+		          navigation.push("VendettaCustomPage", {
+		            title: "Antied Logging Page",
+		            render: () => <LogPage/>,
+		          })
+		        }
+		      />
 				
 					<FormRow 
 						label='Customization'
