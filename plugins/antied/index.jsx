@@ -101,7 +101,7 @@ export default {
                             buttons.splice(targetPos, 0, (
                                 <FormRow
                                     label="Remove Edit History"
-                                    leading={getAssetIDByName("ic_edit_24px")}
+                                    leading={<FormIcon style={{ opacity: 1 }} source={getAssetIDByName("ic_edit_24px")} />}
                                     onPress={() => {
                                         let Edited = storage?.inputs?.editedMessageBuffer || "`[ EDITED ]`";
                                         Edited = Edited + "\n\n";                                    
