@@ -13,6 +13,7 @@ import { semanticColors } from "@vendetta/ui";
 import { showToast } from "@vendetta/ui/toasts";
 
 const CustomColorPickerActionSheet = findByName("CustomColorPickerActionSheet");
+const dialog = findByProps("show", "confirm", "close");
 
 const { ScrollView, View, Text, TouchableOpacity, TextInput, Pressable, Image } = General;
 const { FormLabel, FormIcon, FormArrow, FormRow, FormSwitch, FormSwitchRow, FormSection, FormDivider, FormInput, FormSliderRow } = Forms;
@@ -249,6 +250,38 @@ export default () => {
 				<FormSection title="Plugin Setting" style={[styles.header]}>
 					<FormRow
 		        label="Anti Edit & Delete Logs"
+		        leading={<FormRow.Icon source={getAssetIDByName("ic_audit_log_24px")} />}
+		        trailing={FormRow.Arrow}
+		        onPress={() =>
+		          navigation.push("VendettaCustomPage", {
+		            title: "Antied Logging Page",
+		            render: () => <LogPage/>,
+		          })
+		        }
+		      />
+					{
+						(storage?.log?.length > 0) && (<>
+							<FormRow
+								label="Clear Logs"
+								trailing={<FormRow.Icon source={getAssetIDByName("ic_trash_24px")} />}
+								onPress={() => {
+									dialog.show({
+										title: "Clear logs",
+										body: "This will erase saved logs, continue?",
+										confirmText: "Yes",
+										cancelText: "No",
+										confirmColor: "brand",
+										onConfirm: () => {
+											storage.log = [];
+											showToast("[ANTIED] Logs cleared")
+										}
+									})
+								}}
+							/>
+						</>)
+					}
+					<FormRow
+		        label="Clear Logs"
 		        leading={<FormRow.Icon source={getAssetIDByName("ic_audit_log_24px")} />}
 		        trailing={FormRow.Arrow}
 		        onPress={() =>

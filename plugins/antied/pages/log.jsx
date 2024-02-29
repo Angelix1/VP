@@ -292,7 +292,7 @@ export default () => {
 				</>) : (<>
 					<FormRow label="Only us chicken here, go touch some grass"/>
 				</>)
-			}			
+			}
 			{
 				(log.length > 0) && (<>
 					<View style={styles.main_container}>
@@ -302,6 +302,8 @@ export default () => {
 							data={log}
 							renderItem={({ item }) => <MessageThing data={item} />}
 							removeClippedSubviews={true}
+							initialNumToRender={10}
+       						 maxToRenderPerBatch={20}
 						/>
 					</View>
 				</>)
