@@ -263,7 +263,8 @@ export default () => {
 						(storage?.log?.length > 0) && (<>
 							<FormRow
 								label="Clear Logs"
-								trailing={<FormRow.Icon source={getAssetIDByName("ic_trash_24px")} />}
+								leading={<FormRow.Icon source={getAssetIDByName("ic_trash_24px")} />}
+		        		trailing={FormRow.Arrow}
 								onPress={() => {
 									dialog.show({
 										title: "Clear logs",
@@ -280,17 +281,6 @@ export default () => {
 							/>
 						</>)
 					}
-					<FormRow
-		        label="Clear Logs"
-		        leading={<FormRow.Icon source={getAssetIDByName("ic_audit_log_24px")} />}
-		        trailing={FormRow.Arrow}
-		        onPress={() =>
-		          navigation.push("VendettaCustomPage", {
-		            title: "Antied Logging Page",
-		            render: () => <LogPage/>,
-		          })
-		        }
-		      />
 				
 					<FormRow 
 						label='Customization'
