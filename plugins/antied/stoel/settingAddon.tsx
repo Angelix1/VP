@@ -14,7 +14,7 @@ export default () => {
   return (
     <ErrorBoundary>
       <FormRow
-        label="Antied"
+        label="Anti Edit & Delete Setting"
         leading={<FormRow.Icon source={getAssetIDByName("ic_edit_24px")} />}
         trailing={FormRow.Arrow}
         onPress={() =>

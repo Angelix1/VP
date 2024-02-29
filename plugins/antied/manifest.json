@@ -1,5 +1,5 @@
 {
-    "name": "Anti [Edit|Delete] v1.0.0",
+    "name": "Anti [Edit|Delete] v1.1.3",
     "description": "Keeps deleted messages and logs edited messages, until you restart/reloads the app",
     "authors": [
       {

@@ -161,129 +161,151 @@ export default () => {
 
 	const snipLength = Number(storage?.inputs?.logLength || 60);
 
+	function MessageThing({ data }) {
+		const { type, author, content, edited, where } = data;
+
+		return (<>
+			<View style={styles.item_container}>
+				<TouchableOpacity 
+					style={styles.avatar_container}
+					onPress={() => Profiles.showUserProfile({ userId: author["id"] }) } 
+					onPressIn={onPressIn}
+					onPressOut={onPressOut}
+				>
+					<Animated.View style={[animatedScaleStyle]}>
+						<Image
+							source={{ 
+								uri: (
+									(author.avatar) ?
+										`https://cdn.discordapp.com/avatars/${author?.id}/${author.avatar}.png` :
+										"https://cdn.discordapp.com/embed/avatars/2.png"
+								)
+							}}
+							style={styles.author_avatar}
+						/>
+					</Animated.View>
+				</TouchableOpacity>
+
+				<View style={styles.text_container}> 
+					<View style={styles.log_header}>
+						<View style={styles.log_sub_header}>
+							<Text style={[styles.main_text, styles.author_name]}>
+								{
+									`${author["username"]}`
+								}
+							</Text>
+							{
+								<View style={{ paddingLeft: "2px" }}>{
+									((type == "MessageUpdate") ? 
+										<FormRow.Icon source={getAssetIDByName("pencil")} /> : 
+										<FormRow.Icon source={getAssetIDByName("ic_message_delete")} />
+									)									
+								}</View>
+							}
+							<TouchableOpacity 
+								onPress={() => {
+									if(
+										type == "MessageUpdate" && 
+										data.where.guild && 
+										data.where.channel && 
+										data.where.messageLink
+									) {
+										openURL(`https://discord.com/channels/${data.where.guild}/${data.where.channel}/${data.where.messageLink}`)
+									} 
+									else {
+										showToast("Cannot find target Message")
+									}
+								}}
+							>
+								<View style={{paddingLeft: "2px" }}>
+									<FormRow.Icon
+										source={getAssetIDByName("ic_show_media")}
+									/>
+								</View>
+							</TouchableOpacity>
+						</View>
+					</View>
+					<TouchableOpacity 
+						onPress={() => { 
+							let clip = author.username;
+							clip += ` (${author.id}):\n`;
+							clip += `>>> ${content}`;
+							if(edited) {
+								clip += `\n\n${edited}`
+							}
+							
+							clipboard.setString(clip);
+							showToast("Log content copied") 
+						}} 
+						style={styles.text_container}
+					>
+						<View>
+						{
+							(edited?.length > 0) ? (<>
+								<Text style={[styles.main_text, styles.old_message]}>
+									{shortenString(content, snipLength)}
+								</Text>
+								<Text style={[styles.main_text, styles.message_content]}>
+									{shortenString(edited, snipLength)}
+								</Text>
+							</>) : 
+							(
+								<Text style={styles.message_content}>
+									{shortenString(content, snipLength)}
+								</Text>
+							)
+						}
+						</View>
+					</TouchableOpacity>
+				</View>
+			</View>
+		</>)
+	}
+
 	return (<>
 		<ScrollView>
-			<FormRow
-				label="Nuke logs"
-				trailing={<FormRow.Icon source={getAssetIDByName("ic_trash_24px")} />}
-				onPress={() => {
-					dialog.show({
-						title: "Nuke logs",
-						body: "Nuke the Log?",
-						confirmText: "Yash",
-						cancelText: "nu uh",
-						confirmColor: "brand",
-						onConfirm: () => {
-							storage.log = [];
-							setLog([])
-							showToast("[ANTIED] hmm yum, i ate all of it")
-						}
-					})
-				}}
-			/>
-			
-			<View style={styles.main_container}>
 			{
-				(log.length < 1) ? 
-				(<>
-					<View style={styles.item_container}>
-						<FormRow label="Only us chicken here, go touch some grass"/>
-					</View>
-				</>):
-				log.map((data) => {
-					const { type, author, content, edited, where } = data;
-					return (<>
-						<View style={styles.item_container}>
-							<TouchableOpacity 
-								style={styles.avatar_container}
-								onPress={() => Profiles.showUserProfile({ userId: author["id"] }) } 
-								onPressIn={onPressIn}
-								onPressOut={onPressOut}
-								>
-								<Animated.View style={[animatedScaleStyle]}>
-									<Image
-										source={{ 
-											uri: (
-												(author.avatar) ?
-													`https://cdn.discordapp.com/avatars/${author?.id}/${author.avatar}.png` :
-													"https://cdn.discordapp.com/embed/avatars/2.png"
-											)
-										}}
-										style={styles.author_avatar}
-									/>
-								</Animated.View>
-							</TouchableOpacity>
-
-							<View style={styles.text_container}> 
-								<View style={styles.log_header}>
-									<View style={styles.log_sub_header}>
-										<Text style={[styles.main_text, styles.author_name]}>
-											{
-												`${author["username"]}`
-											}
-										</Text>
-										{
-											((type == "MessageUpdate") ? 
-												<FormRow.Icon source={getAssetIDByName("pencil")} /> : 
-												<FormRow.Icon source={getAssetIDByName("ic_message_delete")} />
-											)
-										}
-										<TouchableOpacity 
-											onPress={() => {
-												if(data.where.guild && data.where.channel && data.where.messageLink) {
-													openURL(`https://discord.com/channels/${data.where.guild}/${data.where.channel}/${data.where.messageLink}`)
-												} 
-												else {
-													showToast("On Direct Message")
-												}
-											}}
-											>
-											<FormRow.Icon
-												source={getAssetIDByName("ic_show_media")}
-											/>
-										</TouchableOpacity>
-
-									</View>
-								</View>								
-								<TouchableOpacity 
-									onPress={() => { 
-										let clip = author.username;
-
-										clip += ` (${author.id}):\n`;
-										clip =+ `>>> ${content}`;
-										if(edited) {
-											clip += `\n\n${edited}`
-										}
-
-
-										clipboard.setString(clip);
-										showToast("Log content copied") 
-									}} 
-									style={styles.text_container}
-									>							
-									<View>
-										{
-											(edited?.length > 0) ? (<>
-												<Text style={[styles.main_text, styles.old_message]}>
-													{shortenString(content, snipLength)}
-												</Text>
-												<Text style={[styles.main_text, styles.message_content]}>
-													{shortenString(edited, snipLength)}
-												</Text>
-											</>) : 
-											(<Text style={styles.message_content}>
-												{shortenString(content, snipLength)}
-												</Text>
-											)
-										}
-									</View>
-								</TouchableOpacity>
-							</View>
-						</View>
-					</>)
-				})
+				(!storage?.switches?.enableLogging) && (<>
+					<FormRow label="To save log of edited/deleted messages, go to plugin setting > patches > Toggle Antied Logging"/>
+				</>)
 			}
-			</View>
+			{				
+				(log?.length > 0) ? (<>
+					<FormRow
+						label="Nuke logs"
+						trailing={<FormRow.Icon source={getAssetIDByName("ic_trash_24px")} />}
+						onPress={() => {
+							dialog.show({
+								title: "Nuke logs",
+								body: "Nuke the Log?",
+								confirmText: "Yash",
+								cancelText: "nu uh",
+								confirmColor: "brand",
+								onConfirm: () => {
+									storage.log = [];
+									setLog([])
+									showToast("[ANTIED] Logs cleared")
+								}
+							})
+						}}
+					/>
+				</>) : (<>
+					<FormRow label="Only us chicken here, go touch some grass"/>
+				</>)
+			}			
+			{
+				(log.length > 0) && (<>
+					<View style={styles.main_container}>
+						<ReactNative.FlatList
+							style={{ paddingHorizontal: 10 }}
+							contentContainerStyle={{ paddingBottom: 20 }}
+							data={log}
+							renderItem={({ item }) => <MessageThing data={item} />}
+							removeClippedSubviews={true}
+						/>
+					</View>
+				</>)
+			}
 		</ScrollView>
 	</>)
 };

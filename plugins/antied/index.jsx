@@ -28,8 +28,9 @@ const { FormRow, FormIcon } = Forms
 makeDefaults(storage, {
     switches: {
         customizeable: false,
-    	enableMD: true,
-    	enableMU: true,
+        enableMD: true,
+        enableMU: true,
+        enableLogging: false,
         useBackgroundColor: false,
         ignoreBots: false,
         minimalistic: true,
@@ -64,10 +65,10 @@ let deletedMessageArray = {};
 
 export default {
     onLoad: () => {
-    	patches.push(
-    		sillyPatch(),
-        	fluxDispatchPatch(deletedMessageArray),
-        	updateRowsPatch(deletedMessageArray),
+        patches.push(
+            sillyPatch(),
+            fluxDispatchPatch(deletedMessageArray),
+            updateRowsPatch(deletedMessageArray),
             selfEditPatch(),
             createMessageRecord(),
             messageRecordDefault(),
@@ -157,7 +158,7 @@ export default {
 
                                         ActionSheet.hideActionSheet()
                                         if(storage?.inputs?.historyToast?.length > 0 || storage?.inputs?.historyToast != "") {
-                                        	showToast(`[ANTI ED] ${storage?.inputs?.historyToast}`, getAssetIDByName("ic_edit_24px"))
+                                            showToast(`[ANTI ED] ${storage?.inputs?.historyToast}`, getAssetIDByName("ic_edit_24px"))
                                         }
                                     }
                                 }/>

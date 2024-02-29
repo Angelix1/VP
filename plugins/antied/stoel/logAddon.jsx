@@ -14,7 +14,7 @@ export default () => {
     <ErrorBoundary>
       <FormRow
         label="Anti Edit & Delete Logs"
-        leading={<FormRow.Icon source={getAssetIDByName("ic_edit_24px")} />}
+        leading={<FormRow.Icon source={getAssetIDByName("ic_audit_log_24px")} />}
         trailing={FormRow.Arrow}
         onPress={() =>
           navigation.push("VendettaCustomPage", {

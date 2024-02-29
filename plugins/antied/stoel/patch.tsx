@@ -1,5 +1,6 @@
 import { plugin } from "@vendetta";
 import { getAssetIDByName } from "@vendetta/ui/assets";
+import { storage } from "@vendetta/plugin";
 
 import { patchSettingsPin } from "./pinToSetting";
 
@@ -16,11 +17,11 @@ export default (): (() => void) => {
 			() => true,
 			() => <SettingsSection />,
 			{
-				key: plugin.manifest.name,
+				key: "antied_setting",
 				icon: getAssetIDByName("ic_edit_24px"),
-				title: "Anti Edit & Delete",
+				title: "Anti Edit & Delete Settings",
 				page: {
-					title: "Anti Edit & Delete",
+					title: "Anti Edit & Delete Settings",
 					render: Settings,
 				},
 			},
@@ -29,7 +30,7 @@ export default (): (() => void) => {
 			() => true,
 			() => <LogSection />,
 			{
-				key: plugin.manifest.name,
+				key: "antied_logs",
 				icon: getAssetIDByName("ic_message_delete"),
 				title: "Anti Edit & Delete Logs",
 				page: {
@@ -38,7 +39,7 @@ export default (): (() => void) => {
 				},
 			},
 		)
-	);
+	)
 
 	return () => patches.forEach((x) => x());
 };

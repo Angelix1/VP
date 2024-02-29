@@ -88,6 +88,12 @@ const togglePatch = [
 		subLabel: "Logs edited message",
 	},
 	{
+		id: "enableLogging",
+		default: false,
+		label: "Toggle Antied Logging",
+		subLabel: "Save Logs to plugin's storage",
+	},
+	{
 		id: "logWarning",
 		default: false,
 		label: "Toggle Exceeding Log Limit Warning",
@@ -239,12 +245,11 @@ export default () => {
 
 	return (
 		<ScrollView>
-			<View style={{ marginTop: 20, marginBottom: 20 }}>
-
+			<View style={{ marginTop: 20, marginBottom: 20 }}>				
 				<FormSection title="Plugin Setting" style={[styles.header]}>
 					<FormRow
-		        label="Antied Logging Page"
-		        leading={<FormRow.Icon source={getAssetIDByName("ic_edit_24px")} />}
+		        label="Anti Edit & Delete Logs"
+		        leading={<FormRow.Icon source={getAssetIDByName("ic_audit_log_24px")} />}
 		        trailing={FormRow.Arrow}
 		        onPress={() =>
 		          navigation.push("VendettaCustomPage", {
