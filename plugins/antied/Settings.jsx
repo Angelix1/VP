@@ -12,6 +12,7 @@ import { General, Forms } from "@vendetta/ui/components";
 import { semanticColors } from "@vendetta/ui";
 import { showToast } from "@vendetta/ui/toasts";
 
+const HelpMessage = findByName("HelpMessage");
 const CustomColorPickerActionSheet = findByName("CustomColorPickerActionSheet");
 const dialog = findByProps("show", "confirm", "close");
 
@@ -248,6 +249,7 @@ export default () => {
 		<ScrollView>
 			<View style={{ marginTop: 20, marginBottom: 20 }}>				
 				<FormSection title="Plugin Setting" style={[styles.header]}>
+				<HelpMessage messageType={0}>"This Plugin development is moved to new Repository"</HelpMessage>
 					<FormRow
 		        label="Anti Edit & Delete Logs"
 		        leading={<FormRow.Icon source={getAssetIDByName("ic_audit_log_24px")} />}
